@@ -23,6 +23,7 @@ import { MobileNav } from "@/components/layout/mobile-nav";
 // import { AuthModal } from "@/components/auth/auth-modal";
 import { GlobalOutlined } from "@ant-design/icons";
 import { Flag } from "@/components/ui/flag";
+import { GlobeIcon } from "../ui/globe-icon";
 // import { ThemeToggle } from "@/components/ThemeToggle";
 
 /**
@@ -386,7 +387,7 @@ const router = useRouter();
 
 function MarketIcon({ code }: { code: string }) {
   if (code === "GLOBAL") {
-    return <GlobalOutlined style={{ fontSize: 16 }} aria-hidden="true" />;
+    return <GlobeIcon size={16} />
   }
   return <Flag code={code} />;
 }

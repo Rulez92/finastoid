@@ -156,16 +156,26 @@ export function ProductDetail({ product }: { product: Product }) {
   const { addItem } = useCart();
 
   const reduce = useReducedMotion();
-  const [added, setAdded] = useState(false);
+    const [added, setAdded] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const [activeImage, setActiveImage] = useState(0);
   const [tab, setTab] = useState<string>("");
   const [showBar, setShowBar] = useState(false);
   const buyRef = useRef<HTMLDivElement>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const images =
+    product.images && product.images.length > 0
+      ? product.images
+      : [product.image];
+  const currentIndex = Math.min(activeImage, images.length - 1);
+
   const isOutOfStock = product.state === "out-of-stock";
   const isLow = product.state === "low-stock";
-  const { amount: price, currency } = getPriceInfo(product, market.currencyCode);
-  const compare = getComparePrice(product, market.currencyCode);
+    const currencyCode = mounted ? market.currencyCode : "USD";
+  const { amount: price, currency } = getPriceInfo(product, currencyCode);
+  const compare = getComparePrice(product, currencyCode);
   const onOffer = compare !== undefined && compare > price;
   const percentOff = onOffer ? Math.round((1 - price / compare) * 100) : 0;
 
@@ -252,16 +262,18 @@ export function ProductDetail({ product }: { product: Product }) {
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           className="lg:col-span-7"
         >
-          <div className="group relative isolate aspect-[4/4.2] w-full overflow-hidden rounded-[28px] border border-[#e4dac8] bg-gradient-to-br from-white via-[#f7f1e6] to-[#eef3ea] shadow-[0_30px_60px_-36px_rgba(16,38,15,0.55)] lg:sticky lg:top-24 lg:max-h-[calc(100dvh-8rem)] dark:border-border">
+          <div className="lg:sticky lg:top-24">
+          <div className="group relative isolate aspect-[4/4.2] w-full overflow-hidden rounded-[28px] border border-[#e4dac8] bg-gradient-to-br from-white via-[#f7f1e6] to-[#eef3ea] shadow-[0_30px_60px_-36px_rgba(16,38,15,0.55)] lg:max-h-[calc(100dvh-8rem)] dark:border-border">
             <div
               aria-hidden="true"
               className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[75%] w-[75%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(201,128,63,0.18)_0%,rgba(35,77,42,0.08)_50%,transparent_72%)]"
             />
             <Image
-              src={product.image}
-              alt={`${product.name} — ${product.category}`}
+              key={images[currentIndex]}
+              src={images[currentIndex]}
+              alt={`${product.name} — ${product.category}, view ${currentIndex + 1}`}
               fill
-              priority
+              priority={currentIndex === 0}
               sizes="(min-width: 1024px) 58vw, 100vw"
               className="object-contain p-8 transition-transform duration-700 ease-out motion-reduce:transition-none sm:p-12 [@media(hover:hover)]:group-hover:scale-[1.04]"
             />
@@ -294,6 +306,39 @@ export function ProductDetail({ product }: { product: Product }) {
                 ) : null}
               </span>
             )}
+
+            {images.length > 1 && (
+              <ul
+                aria-label="Product images"
+                className="absolute right-3 top-3 z-10 flex flex-col gap-2"
+              >
+              {images.map((src, i) => (
+                <li key={src} className="shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => setActiveImage(i)}
+                    aria-label={`Show image ${i + 1} of ${images.length}`}
+                    aria-current={i === currentIndex}
+                    className={cn(
+                      "relative block h-12 w-12 cursor-pointer touch-manipulation overflow-hidden rounded-xl border bg-white/90 shadow-sm backdrop-blur transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-copper sm:h-14 sm:w-14",
+                      i === currentIndex
+                        ? "border-copper ring-2 ring-copper/40"
+                        : "border-[#e4dac8] opacity-70 active:opacity-100 [@media(hover:hover)]:hover:opacity-100",
+                    )}
+                  >
+                    <Image
+                      src={src}
+                      alt=""
+                      fill
+                      sizes="80px"
+                      className="object-contain p-1.5"
+                    />
+                  </button>
+                </li>
+              ))}
+              </ul>
+            )}
+          </div>
           </div>
         </motion.div>
 

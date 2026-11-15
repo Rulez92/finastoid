@@ -21,7 +21,8 @@ async function fetchStorefrontProducts(): Promise<Product[]> {
        product_country_prices ( price, sale_price, active, countries ( currency_code ) )`,
     )
     .eq("status", "active")
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .order("position", { referencedTable: "product_images", ascending: true });
 
   if (error) console.error("[storefront] query failed:", error.message);
   if (!data) return [];
@@ -96,8 +97,13 @@ async function fetchStorefrontProducts(): Promise<Product[]> {
       }
     }
 
-    const img =
-      p.product_images?.find((i: any) => i.is_primary) ?? p.product_images?.[0];
+    const imgs: { url: string; is_primary: boolean }[] = p.product_images ?? [];
+    const img = imgs.find((i) => i.is_primary) ?? imgs[0];
+    // Primary first, then the rest in the order the database returned them.
+    const gallery = [
+      ...(img ? [img] : []),
+      ...imgs.filter((i) => i !== img),
+    ].map((i) => i.url);
     const weight = variants.find((v: any) => v.weight != null)?.weight;
 
     return [{
@@ -117,6 +123,7 @@ async function fetchStorefrontProducts(): Promise<Product[]> {
       comparePrices: compareAt !== undefined ? comparePrices : undefined,
             offerEndsAt: hasSale ? (cheapest?.sale_ends_at ?? undefined) : undefined,
       image: img?.url ?? "/product/placeholder.png",
+      images: gallery.length > 0 ? gallery : ["/product/placeholder.png"],
       state,
       accentColor: p.accent_color,
       features: p.features ?? [],

@@ -114,7 +114,7 @@ const productInputSchema = z.object({
   metaDescription: z.string().trim().max(160).nullable(),
   variants: z.array(variantSchema).min(1, "Add at least one variant"),
   countryPrices: z.array(countryPriceSchema),
-   images: z.array(imageSchema).max(1),
+   images: z.array(imageSchema).max(3),
   sections: z.array(sectionSchema).max(12),
   // ids the admin removed in the form's variant/country-price repeaters
   deletedVariantIds: z.array(z.string().uuid()),
@@ -511,14 +511,22 @@ async function insertImages(
   images: ProductInput["images"],
 ): Promise<ActionResult> {
   if (images.length === 0) return { success: true, productId };
+
+  // Exactly one primary: the first one flagged, or the first image if none is.
+  const primaryIndex = Math.max(
+    images.findIndex((img) => img.isPrimary),
+    0,
+  );
+
   const supabase = await createClient();
   const { error } = await supabase.from("product_images").insert(
-    images.map((img) => ({
+    images.map((img, index) => ({
       product_id: productId,
       url: img.url,
       storage_path: img.path,
       alt: img.alt,
-      is_primary: img.isPrimary,
+      is_primary: index === primaryIndex,
+      position: index, // keeps the admin's drag order
     })),
   );
   if (error)

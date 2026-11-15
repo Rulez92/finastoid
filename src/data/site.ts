@@ -49,32 +49,32 @@ export const availableMarkets: Market[] = [
     countryLabel: "Indonesia",
     currencyCode: "IDR",
   },
-  {
-    countryCode: "MY",
-    countryLabel: "Malaysia",
-    currencyCode: "MYR",
-  },
+  // {
+  //   countryCode: "MY",
+  //   countryLabel: "Malaysia",
+  //   currencyCode: "MYR",
+  // },
   // {
   //   countryCode: "TR",
   //   countryLabel: "Turkey",
   //   currencyCode: "TRY",
   // },
-   {
-    countryCode: "PH",
-    countryLabel: "Philippines",
-    currencyCode: "PHP",
-  },
-  {
-    countryCode: "PK",
-    countryLabel: "Pakistan",
-    currencyCode: "PKR",
-  },
+  //  {
+  //   countryCode: "PH",
+  //   countryLabel: "Philippines",
+  //   currencyCode: "PHP",
+  // },
+  // {
+  //   countryCode: "PK",
+  //   countryLabel: "Pakistan",
+  //   currencyCode: "PKR",
+  // },
  
-  {
-    countryCode: "US",
-    countryLabel: "United States",
-    currencyCode: "USD",
-  },
+  // {
+  //   countryCode: "US",
+  //   countryLabel: "United States",
+  //   currencyCode: "USD",
+  // },
   {
     countryCode: "GLOBAL",
     countryLabel: "Global",

@@ -163,7 +163,7 @@ export function OrdersChart({
       />
 
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1 basis-[200px]">
           <p className="flex items-center gap-2 font-sans text-[13px] font-semibold text-aff-green-900">
             <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-aff-green-900 text-aff-gold-300">
               <TrendingUp
@@ -189,12 +189,12 @@ export function OrdersChart({
               : `${commissionText(totalCommission)} commission`}
             {" · "}
             <span className="text-aff-muted/80">
-              {bucket === "month" ? "Months are UTC" : "Days are UTC"}
+              {bucket === "month" ? "Months " : "Days "}
             </span>
           </p>
-        </div>
+        </div> 
 
-        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:shrink-0 sm:flex-row sm:items-center">
           <Segmented<"commission" | "orders">
             size="large"
             block

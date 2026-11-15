@@ -2,6 +2,7 @@
 
 import { Input } from "antd";
 import { Select } from "antd";
+import { Search } from "lucide-react";
 export type SortOption = "featured" | "price-asc" | "price-desc" | "name-asc";
 
 const sortLabels: Record<SortOption, string> = {
@@ -25,26 +26,39 @@ export function ShopToolbar({
   resultCount: number;
 }) {
   return (
-    <div className="flex flex-col gap-4 border-b border-border pb-5 sm:flex-row sm:items-center sm:justify-between" >
-      <div className="relative flex-1 sm:max-w-sm"  >
+    <div className="flex flex-col gap-3 border-b border-[#e4dac8] pb-5 sm:flex-row sm:items-center sm:justify-between sm:gap-4 dark:border-border">
+      <div className="relative w-full sm:max-w-sm">
       
        
-        <Input.Search
+        <Input
           id="shop-search"
           type="text"
+          size="large"
+          allowClear
+          prefix={
+            <Search
+              className="h-4 w-4 text-warm-gray"
+              strokeWidth={1.8}
+              aria-hidden="true"
+            />
+          }
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
           placeholder="Search for tea or blend..."
-          className="   pl-10 pr-4 font-sans text-[14px] text-espresso placeholder:text-warm-gray focus:border-copper focus:outline-none"
+          aria-label="Search products"
+          
         />
       </div>
 
       <div className="flex items-center justify-between gap-3 sm:justify-end">
-        <p className="font-sans text-[13px] text-warm-gray">
+        <p
+          aria-live="polite"
+          className="shrink-0 rounded-full bg-[#eef3ea] px-3 py-1 font-sans text-[12px] font-medium text-green-deep"
+        >
           {resultCount} {resultCount === 1 ? "product" : "products"}
         </p>
-                <div className="flex items-center gap-2 font-sans text-[13px] text-warm-gray">
-          <span>Sort by</span>
+        <div className="flex items-center gap-2 font-sans text-[13px] text-warm-gray">
+          <span className="hidden min-[400px]:inline">Sort by</span>
           <Select<SortOption>
             className="sort-select"
             value={sort}

@@ -30,7 +30,8 @@ export type Product = {
   compareAtPrice?: number;
   comparePrices?: Record<string, number>;
   offerEndsAt?: string; // ISO date
-  image: string;
+  image: string; // primary image, used by the product cards
+  images?: string[]; // all images, primary first, used by the detail gallery
   state: ProductState;
   accentColor: string;
   features: string[];

@@ -38,7 +38,7 @@ import { cn } from "@/lib/utils";
 // never sees half-uploaded images.
 
 const BUCKET = "product-images";
-const MAX_IMAGES = 1;
+const MAX_IMAGES = 3;
 const MAX_INPUT_BYTES = 10 * 1024 * 1024; // 10MB original (compressed before upload)
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const UPLOAD_CONCURRENCY = 3;
