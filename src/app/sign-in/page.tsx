@@ -60,7 +60,7 @@ const BLOOM_END = 1.45;
 const SPLIT_AT = 1.75;
 const SPLIT_DURATION = 1.0;
 const CONTENT_DELAY = SPLIT_AT + 0.35;
-const PETALS = 12;
+const PETALS = 8;
 
 const FEATURES = [
   {
@@ -97,7 +97,7 @@ const PARTICLES = [
 ];
 
 // GPU hint so transform/opacity animations stay on the compositor (smooth on mobile)
-const gpu = { willChange: "transform" } as React.CSSProperties;
+const gpu = {} as React.CSSProperties;
 
 /**
  * Full-page sign-in for Admin and Affiliate accounts only — customers check
@@ -174,7 +174,7 @@ export default function SignInPage() {
       {/* ───────── GREEN DOTS THEME BACKDROP (no image) ───────── */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 overflow-hidden"
+               className={`pointer-events-none absolute inset-0 overflow-hidden ${busy || intro ? "hidden" : "hidden sm:block"}`}
       >
         {/* animated blobs */}
         <motion.div
@@ -380,7 +380,7 @@ export default function SignInPage() {
 
           {/* animated gold light running around the card edge */}
           <div className="relative overflow-hidden rounded-[31px] p-[1.5px]">
-            <div aria-hidden="true" className="absolute inset-0 grid place-items-center">
+            <div aria-hidden="true" className="absolute inset-0 hidden place-items-center sm:grid">
               <motion.span
                 className="block aspect-square w-[220%] shrink-0"
                 style={{
