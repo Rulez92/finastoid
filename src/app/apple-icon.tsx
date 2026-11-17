@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { BRAND, leafMark } from "@/lib/brand-mark";
 
 export const size = { width: 180, height: 180 };
 export const contentType = "image/png";
@@ -13,14 +14,10 @@ export default function AppleIcon() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "#234d2a",
-          color: "#e8c06a",
-          fontSize: 96,
-          fontWeight: 700,
-          letterSpacing: -3,
+          background: `linear-gradient(145deg, #2c5e34 0%, ${BRAND.green} 60%, #1b3d21 100%)`,
         }}
       >
-        FT
+        {leafMark(104, 1.9)}
       </div>
     ),
     { ...size },

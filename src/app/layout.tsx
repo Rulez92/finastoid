@@ -39,7 +39,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://www.finasto.id/"),
   title: "FINASTO™ — Premium Bali Botanical Tea",
   description:
-    "FINASTO™ is a premium Bali-born Botanical Tea Brand. Discover Flovera and Blue Moon, thoughtfully presented for modern everyday rituals.",
+    "Finasto™ — Elevating Global Standards in Premium Tea and Coffee with Excellence.",
 };
 // metadataBase: new URL("https://your-domain.com"),
 

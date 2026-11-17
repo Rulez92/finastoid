@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { BRAND, leafMark } from "@/lib/brand-mark";
 
 export const size = { width: 64, height: 64 };
 export const contentType = "image/png";
@@ -13,15 +14,11 @@ export default function Icon() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "#234d2a", // brand green-deep
-          color: "#e8c06a", // brand gold
-          fontSize: 34,
-          fontWeight: 700,
-          letterSpacing: -1,
+          background: `linear-gradient(145deg, #2c5e34 0%, ${BRAND.green} 60%, #1b3d21 100%)`,
           borderRadius: 14,
         }}
       >
-        FT
+        {leafMark(38, 2.4)}
       </div>
     ),
     { ...size },

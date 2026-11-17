@@ -88,9 +88,9 @@ export function SiteFooter() {
                 key={column.title}
                 className={column.title === "About Finasto™" ? "lg:ml-12" : ""}
               >
-                <h3 className="font-sans text-[13px]  font-bold uppercase tracking-[0.1em] text-green dark:text-copper-light">
-                  {withTM(column.title)}
-                </h3>
+             <h3 className="font-sans text-[13px] font-bold uppercase tracking-[0.1em] text-green dark:text-copper-light">
+  {withTM(column.title)}
+</h3>
                 <FooterHeadingLine />
                 
                 <ul className="mt-4 flex flex-col gap-3">

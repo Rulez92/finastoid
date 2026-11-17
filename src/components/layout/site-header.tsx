@@ -41,6 +41,10 @@ export function SiteHeader() {
   const marketRef = useRef<HTMLDivElement>(null);
 const router = useRouter();
   const pathname = usePathname();
+
+  useEffect(() => {
+    router.prefetch("/sign-in");
+  }, [router]);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const searchInputRef = useRef<HTMLInputElement>(null);
