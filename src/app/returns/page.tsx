@@ -312,7 +312,7 @@ export default function ReturnsPage() {
   return (
     <PolicyPage
       path="/returns"
-      eyebrow="returns refunds "
+      eyebrow="returns &  refunds "
       title="Returns & Refunds"
       intro="At FINASTO™, we are committed to providing quality products and a reliable shopping experience. Please review our Returns & Refunds Policy before placing your order."
       updated={UPDATED}

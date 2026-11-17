@@ -108,7 +108,7 @@ export const footerColumns: FooterColumn[] = [
     ],
   },
   {
-    title: "About Finasto™",
+    title: "About Finasto",
     links: [
            { label: "Our Story", href: "/brand#story" },
       { label: "Vision & Mission", href: "/brand#vision-mission" },

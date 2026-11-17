@@ -329,7 +329,7 @@ export default function ShippingPage() {
   return (
     <PolicyPage
       path="/shipping"
-      eyebrow="Shipping delivery"
+      eyebrow="Shipping & delivery"
       title="Shipping & Delivery"
       intro="FINASTO™ orders are carefully prepared and shipped from Indonesia. Here’s what to expect from checkout to delivery."
       updated={UPDATED}
@@ -509,7 +509,7 @@ export default function ShippingPage() {
                 <p className="mt-5 font-display text-[56px] leading-none">
                   {days}
                   <span className="ml-2 font-sans text-[14px] font-normal text-white/75">
-                    business days
+                    Business days
                   </span>
                 </p>
                 <p className="mt-3 font-sans text-[13.5px] leading-relaxed text-white/70">

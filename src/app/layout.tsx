@@ -36,10 +36,10 @@ const inter = localFont({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://your-domain.com"),
-  title: "Finasto — Premium Bali Botanical Tea",
+  metadataBase: new URL("https://www.finasto.id/"),
+  title: "FINASTO™ — Premium Bali Botanical Tea",
   description:
-    "Finasto is a premium Bali-born botanical tea brand. Discover Velora and Blue Moon, thoughtfully presented for modern everyday rituals.",
+    "FINASTO™ is a premium Bali-born Botanical Tea Brand. Discover Flovera and Blue Moon, thoughtfully presented for modern everyday rituals.",
 };
 // metadataBase: new URL("https://your-domain.com"),
 
