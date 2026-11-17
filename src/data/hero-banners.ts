@@ -35,12 +35,12 @@ export const heroSlides: HeroSlide[] = [
     accent: "#244a1e",
   },
  
-  {
-    id: "floral",
-    image: "/hero/Pure Elegance in Every.png",
-    imageAlt: "Sip the Beauty of Nature. Pure, refreshing, naturally yours. Shop now.",
-    href: "/shop",
-    accent: "#1f3f12",
-  },
+  // {
+  //   id: "floral",
+  //   image: "/hero/Pure Elegance in Every.png",
+  //   imageAlt: "Sip the Beauty of Nature. Pure, refreshing, naturally yours. Shop now.",
+  //   href: "/shop",
+  //   accent: "#1f3f12",
+  // },
    
 ];
