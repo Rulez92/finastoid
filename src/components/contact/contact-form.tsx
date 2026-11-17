@@ -83,10 +83,12 @@ export function ContactForm() {
             <CheckCircle2 className="h-8 w-8" strokeWidth={1.5} aria-hidden="true" />
           </span>
           <h2 className="mt-5 font-display text-[28px] leading-tight text-espresso">
-            Message sent
+           Thank you for contacting FINASTO™.
+
+
           </h2>
           <p className="mt-2 max-w-[340px] font-sans text-[14px] leading-relaxed text-warm-gray">
-            Thank you for getting in touch. {contactContent.responseNote}
+            Your message has been successfully submitted. Our team will be in touch with you soon. {contactContent.responseNote}
           </p>
           <button
             type="button"
