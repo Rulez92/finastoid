@@ -1,118 +1,277 @@
+// "use client";
+
+// import Image from "next/image";
+// import Link from "next/link";
+// import { usePathname } from "next/navigation";
+// import { LogOut, X } from "lucide-react";
+// import { cn } from "@/lib/utils";
+// import { signOutAction } from "@/lib/auth/actions";
+// import { stockistNav, isNavActive } from "./stockist-nav";
+
+// // Same structure and styling as admin-sidebar.tsx: logo on the left,
+// // nav list, sign out pinned to the bottom. onNavigate closes the mobile
+// // drawer when a link (or the close button) is tapped.
+
+// export function StockistSidebar({
+//   onNavigate,
+//   collapsed = false,
+// }: {
+//   onNavigate?: () => void;
+//   collapsed?: boolean;
+// }) {
+//   const pathname = usePathname();
+
+//   return (
+//     <div className="flex h-full flex-col">
+//       <div className="flex h-16 shrink-0 items-center justify-between border-b border-border px-5">
+//         <Link
+//           href="/stockist"
+//           onClick={onNavigate}
+//           aria-label="Finasto stockist home"
+//           className={cn(collapsed && "lg:hidden")}
+//         >
+//           <Image
+//             src="/brand/finasto-logo.png"
+//             alt="Finasto"
+//             width={120}
+//             height={90}
+//             priority
+//             className="h-11 w-auto dark:hidden"
+//           />
+//           <Image
+//             src="/brand/finasto-logo-dark.png"
+//             alt="Finasto"
+//             width={120}
+//             height={90}
+//             priority
+//             className="hidden h-11 w-auto dark:block"
+//           />
+//         </Link>
+//         <button
+//           type="button"
+//           onClick={onNavigate}
+//           aria-label="Close menu"
+//           className="inline-flex h-10 w-10 cursor-pointer items-center justify-center text-espresso/70 hover:text-espresso lg:hidden"
+//         >
+//           <X className="h-5 w-5" strokeWidth={1.6} />
+//         </button>
+//       </div>
+
+//       <nav aria-label="Affiliate" className="flex-1 overflow-y-auto px-3 py-4">
+//         <ul className="flex flex-col gap-1">
+//           {stockistNav.map(({ label, href, icon: Icon }) => {
+//             const active = isNavActive(pathname, href);
+//             return (
+//               <li key={href}>
+//                 <Link
+//                   href={href}
+//                   onClick={onNavigate}
+//                   aria-current={active ? "page" : undefined}
+//                   title={collapsed ? label : undefined}
+//                   className={cn(
+//                     "group relative flex items-center gap-3 rounded-xl px-3 py-2.5 font-sans text-[14px] transition-all duration-200",
+//                     collapsed && "lg:justify-center lg:gap-0 lg:px-0",
+//                     active
+//                       ? "bg-copper/10 font-medium text-espresso"
+//                       : "text-warm-gray hover:bg-espresso/5 hover:text-espresso",
+//                   )}
+//                 >
+//                   {active && (
+//                     <span
+//                       aria-hidden
+//                       className="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r-full bg-copper"
+//                     />
+//                   )}
+//                   <Icon
+//                     className={cn(
+//                       "h-[18px] w-[18px] shrink-0 transition-colors",
+//                       active ? "text-copper" : "group-hover:text-copper",
+//                     )}
+//                     strokeWidth={1.6}
+//                   />
+//                   <span className={cn("truncate", collapsed && "lg:hidden")}>
+//                     {label}
+//                   </span>
+//                 </Link>
+//               </li>
+//             );
+//           })}
+//         </ul>
+//       </nav>
+
+//       <div className="shrink-0 border-t border-border p-3">
+//         <form action={signOutAction}>
+//           <button
+//             type="submit"
+//             title={collapsed ? "Sign out" : undefined}
+//             className={cn(
+//               "flex w-full cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 font-sans text-[14px] text-warm-gray transition-colors hover:bg-red/10 hover:text-red",
+//               collapsed && "lg:justify-center lg:gap-0 lg:px-0",
+//             )}
+//           >
+//             <LogOut className="h-[18px] w-[18px]" strokeWidth={1.6} />
+//             <span className={cn(collapsed && "lg:hidden")}>Sign out</span>
+//           </button>
+//         </form>
+//       </div>
+//     </div>
+//   );
+// }
 "use client";
 
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LogOut, X } from "lucide-react";
+import { ChevronLeft, LogOut, X } from "lucide-react";
+import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 import { signOutAction } from "@/lib/auth/actions";
 import { stockistNav, isNavActive } from "./stockist-nav";
 
-// Same structure and styling as admin-sidebar.tsx: logo on the left,
-// nav list, sign out pinned to the bottom. onNavigate closes the mobile
-// drawer when a link (or the close button) is tapped.
+// Same design as affiliate-sidebar.tsx: logo, nav list, sign out pinned to
+// the bottom. onNavigate closes the mobile drawer when a link (or the close
+// button) is tapped. Colors come from the aff-* tokens in globals.css.
 
 export function StockistSidebar({
   onNavigate,
   collapsed = false,
+  onToggleCollapse,
 }: {
   onNavigate?: () => void;
   collapsed?: boolean;
+  onToggleCollapse?: () => void;
 }) {
   const pathname = usePathname();
 
   return (
-    <div className="flex h-full flex-col">
-      <div className="flex h-16 shrink-0 items-center justify-between border-b border-border px-5">
-        <Link
-          href="/stockist"
-          onClick={onNavigate}
-          aria-label="Finasto stockist home"
-          className={cn(collapsed && "lg:hidden")}
-        >
-          <Image
-            src="/brand/finasto-logo.png"
-            alt="Finasto"
-            width={120}
-            height={90}
-            priority
-            className="h-11 w-auto dark:hidden"
-          />
-          <Image
-            src="/brand/finasto-logo-dark.png"
-            alt="Finasto"
-            width={120}
-            height={90}
-            priority
-            className="hidden h-11 w-auto dark:block"
-          />
-        </Link>
+    <div className="relative h-full">
+      {onToggleCollapse && (
         <button
           type="button"
-          onClick={onNavigate}
-          aria-label="Close menu"
-          className="inline-flex h-10 w-10 cursor-pointer items-center justify-center text-espresso/70 hover:text-espresso lg:hidden"
+          onClick={onToggleCollapse}
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          aria-expanded={!collapsed}
+          aria-controls="stockist-sidebar"
+          className="group/handle absolute -right-3.5 top-[104px] z-20 hidden h-7 w-7 cursor-pointer touch-manipulation items-center justify-center rounded-full border border-aff-gold-400/60 bg-aff-green-950 text-aff-gold-300 shadow-[0_6px_16px_-6px_rgba(3,24,7,0.6)] transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-aff-gold-300 active:scale-90 motion-reduce:transition-none lg:inline-flex [@media(hover:hover)]:hover:border-aff-gold-300 [@media(hover:hover)]:hover:bg-aff-gold-300 [@media(hover:hover)]:hover:text-aff-green-950 [@media(hover:hover)]:hover:shadow-[0_0_18px_rgba(241,204,156,0.55)]"
         >
-          <X className="h-5 w-5" strokeWidth={1.6} />
-        </button>
-      </div>
-
-      <nav aria-label="Affiliate" className="flex-1 overflow-y-auto px-3 py-4">
-        <ul className="flex flex-col gap-1">
-          {stockistNav.map(({ label, href, icon: Icon }) => {
-            const active = isNavActive(pathname, href);
-            return (
-              <li key={href}>
-                <Link
-                  href={href}
-                  onClick={onNavigate}
-                  aria-current={active ? "page" : undefined}
-                  title={collapsed ? label : undefined}
-                  className={cn(
-                    "group relative flex items-center gap-3 rounded-xl px-3 py-2.5 font-sans text-[14px] transition-all duration-200",
-                    collapsed && "lg:justify-center lg:gap-0 lg:px-0",
-                    active
-                      ? "bg-copper/10 font-medium text-espresso"
-                      : "text-warm-gray hover:bg-espresso/5 hover:text-espresso",
-                  )}
-                >
-                  {active && (
-                    <span
-                      aria-hidden
-                      className="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r-full bg-copper"
-                    />
-                  )}
-                  <Icon
-                    className={cn(
-                      "h-[18px] w-[18px] shrink-0 transition-colors",
-                      active ? "text-copper" : "group-hover:text-copper",
-                    )}
-                    strokeWidth={1.6}
-                  />
-                  <span className={cn("truncate", collapsed && "lg:hidden")}>
-                    {label}
-                  </span>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
-
-      <div className="shrink-0 border-t border-border p-3">
-        <form action={signOutAction}>
-          <button
-            type="submit"
-            title={collapsed ? "Sign out" : undefined}
+          <ChevronLeft
             className={cn(
-              "flex w-full cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 font-sans text-[14px] text-warm-gray transition-colors hover:bg-red/10 hover:text-red",
-              collapsed && "lg:justify-center lg:gap-0 lg:px-0",
+              "h-4 w-4 transition-transform duration-300 motion-reduce:transition-none",
+              collapsed && "rotate-180",
             )}
+            strokeWidth={2.2}
+            aria-hidden="true"
+          />
+        </button>
+      )}
+
+      <div className="relative flex h-full flex-col overflow-hidden bg-[radial-gradient(ellipse_at_25%_18%,var(--color-aff-green-800)_0%,var(--color-aff-green-900)_48%,var(--color-aff-green-950)_100%)]">
+        {/* Right vertical golden edge line */}
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 right-0 z-10 w-[1.5px] bg-gradient-to-b from-aff-gold-600/30 via-aff-gold-300/75 to-aff-gold-600/30"
+        />
+
+        {/* Logo & Close Drawer Button */}
+        <div className="relative z-10 flex h-32 shrink-0 items-center justify-center px-5 pt-2">
+          <Link
+            href="/stockist"
+            onClick={onNavigate}
+            aria-label="Finasto stockist home"
+            className={cn(collapsed && "lg:hidden")}
           >
-            <LogOut className="h-[18px] w-[18px]" strokeWidth={1.6} />
-            <span className={cn(collapsed && "lg:hidden")}>Sign out</span>
+            <Image
+              src="/brand/finasto-logo-dark.png"
+              alt="Finasto"
+              width={130}
+              height={98}
+              priority
+              className="h-24 w-auto drop-shadow-[0_4px_20px_rgba(241,204,156,0.35)]"
+            />
+          </Link>
+
+          <button
+            type="button"
+            onClick={onNavigate}
+            aria-label="Close menu"
+            className="absolute right-3 top-3 inline-flex h-9 w-9 cursor-pointer items-center justify-center text-aff-cream-50/70 hover:text-aff-cream-50 lg:hidden"
+          >
+            <X className="h-5 w-5" strokeWidth={1.6} />
           </button>
-        </form>
+        </div>
+
+        {/* Navigation List */}
+        <nav
+          aria-label="Stockist"
+          className="relative z-10 flex-1 overflow-y-auto px-3.5 py-3"
+        >
+          <ul className="flex flex-col gap-2">
+            {stockistNav.map(({ label, href, icon: Icon }) => {
+              const active = isNavActive(pathname, href);
+              return (
+                <li key={href}>
+                  <motion.div
+                    whileHover={{ x: 4, scale: 1.01 }}
+                    whileTap={{ scale: 0.97 }}
+                    transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    <Link
+                      href={href}
+                      onClick={onNavigate}
+                      aria-current={active ? "page" : undefined}
+                      title={collapsed ? label : undefined}
+                      className={cn(
+                        "group relative flex items-center gap-3.5 rounded-xl px-3.5 py-2.5 font-sans text-[14px] transition-all duration-200",
+                        collapsed && "lg:justify-center lg:gap-0 lg:px-0",
+                        active
+                          ? "bg-gradient-to-r from-aff-cream-50 via-aff-gold-300 to-aff-gold-600 font-semibold text-aff-green-950 shadow-[0_0_24px_rgba(241,204,156,0.4),inset_0_1px_1px_rgba(255,255,255,0.7)] ring-1 ring-aff-gold-300/80"
+                          : "text-aff-cream-50/85 hover:bg-aff-cream-50/5 hover:text-aff-cream-50",
+                      )}
+                    >
+                      <Icon
+                        className={cn(
+                          "h-[18px] w-[18px] shrink-0 transition-colors",
+                          active
+                            ? "text-aff-green-950"
+                            : "text-aff-cream-50/80 group-hover:text-aff-gold-300",
+                        )}
+                        strokeWidth={active ? 2 : 1.6}
+                      />
+                      <span
+                        className={cn("truncate", collapsed && "lg:hidden")}
+                      >
+                        {label}
+                      </span>
+                    </Link>
+                  </motion.div>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+
+        {/* Sign Out Section (pinned to bottom) */}
+        <div className="relative z-10 shrink-0 p-3.5 pb-5">
+          <form action={signOutAction}>
+            <motion.div
+              whileHover={{ x: 3 }}
+              whileTap={{ scale: 0.97 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+            >
+              <button
+                type="submit"
+                title={collapsed ? "Sign out" : undefined}
+                className={cn(
+                  "flex w-full cursor-pointer items-center gap-3.5 rounded-xl px-3.5 py-2.5 font-sans text-[14px] text-aff-cream-50/75 transition-colors hover:bg-aff-cream-50/5 hover:text-aff-gold-300",
+                  collapsed && "lg:justify-center lg:gap-0 lg:px-0",
+                )}
+              >
+                <LogOut className="h-[18px] w-[18px]" strokeWidth={1.6} />
+                <span className={cn(collapsed && "lg:hidden")}>Sign out</span>
+              </button>
+            </motion.div>
+          </form>
+        </div>
       </div>
     </div>
   );

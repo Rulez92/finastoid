@@ -80,7 +80,9 @@ export function ProductCard({ product }: { product: Product }) {
       {/* Image */}
       <Link
         ref={tiltRef}
-        href={`/shop/${product.slug}`}
+        // href={`/shop/${product.slug}`}
+        href={""}
+
         onMouseEnter={handleEnter}
         onMouseMove={handleMove}
         onMouseLeave={handleLeave}
@@ -100,6 +102,7 @@ export function ProductCard({ product }: { product: Product }) {
         <h3 className="font-serif text-[32px] leading-tight text-white sm:text-[38px]">
           {product.name}
         </h3>
+        <br />
         <p className="mt-1 font-sans text-[13px] uppercase tracking-[0.2em] text-white/70">
           {product.category}
         </p>

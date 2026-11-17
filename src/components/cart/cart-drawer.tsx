@@ -266,6 +266,7 @@ export function CartDrawer({ products = [] }: { products?: Product[] }) {
                     Shipping and taxes are calculated at checkout.
                   </p>
 
+
                   <Link
                     href="/checkout"
                     onClick={closeCart}

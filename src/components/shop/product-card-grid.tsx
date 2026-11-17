@@ -35,7 +35,9 @@ const stateClass: Record<Product["state"], string> = {
 export function ProductCardGrid({ product }: { product: Product }) {
   const isOutOfStock = product.state === "out-of-stock";
   const [wishlisted, setWishlisted] = useState(false);
-  const [quickOpen, setQuickOpen] = useState(false);
+    const [quickOpen, setQuickOpen] = useState(false);
+  const [imageOpen, setImageOpen] = useState(false);
+
   const { bind: cardBind } = usePointerActive();
 const { bind: heartBind } = usePointerActive();
 const { bind: eyeBind } = usePointerActive();
@@ -119,14 +121,14 @@ className="absolute right-3 top-14 z-20 flex h-9 w-9 cursor-pointer items-center
         <p className="font-sans text-[11px] uppercase tracking-[0.12em] text-warm-gray">
           {product.category}
         </p>
-        <h3 className="mt-1 font-sans text-[15px] font-semibold text-espresso">
+        {/* <h3 className="mt-1 font-sans text-[15px] font-semibold text-espresso">
           <Link
             href={`/shop/${product.slug}`}
             className="after:absolute after:inset-0 after:z-10 after:rounded-[16px] focus-visible:outline-none focus-visible:after:outline focus-visible:after:outline-2 focus-visible:after:outline-offset-2 focus-visible:after:outline-copper"
           >
             {product.name}
           </Link>
-        </h3>
+        </h3> */}
         {product.tagline.length > 0 && (
           <ul className="mt-2 flex flex-wrap gap-1.5">
             {product.tagline.slice(0, 2).map((word) => (
@@ -198,14 +200,19 @@ className="absolute right-3 top-14 z-20 flex h-9 w-9 cursor-pointer items-center
           </p>
         )}
 
+                    
         <button
   type="button"
   {...cartBind}
-  onClick={() => addItem(product.id)}
+  //  onClick={() => {
+  //   addItem(product.id);
+  //   setImageOpen(true);
+  // }}
   disabled={isOutOfStock}
   className="relative z-20 mt-3 h-10 w-full cursor-pointer rounded-full bg-gradient-to-b from-green to-green font-sans text-[13px] font-medium text-cream shadow-sm transition-all data-[active=true]:from-espresso-deep data-[active=true]:to-espresso-deep data-[active=true]:shadow-md dark:bg-none dark:bg-copper dark:text-espresso-deep dark:shadow-none dark:data-[active=true]:bg-copper-light disabled:cursor-not-allowed disabled:bg-none disabled:bg-disabled disabled:shadow-none dark:disabled:bg-disabled dark:disabled:text-espresso [-webkit-tap-highlight-color:transparent]"
 >
-          {isOutOfStock ? "Out of Stock" : "Add to Cart"}
+          {/* {isOutOfStock ? "Out of Stock" : "Add to Cart"} */}
+          {isOutOfStock ? "Out of Stock" : "Coming Soon"}
         </button>
       </div>
     </article>

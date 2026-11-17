@@ -4,8 +4,8 @@ export const contactTopics = [
   { id: "general", label: "General Enquiry" },
   { id: "order", label: "Order Support" },
   { id: "product", label: "Product Enquiry" },
-  { id: "partnership", label: "Returns & Refunds" },
-  { id: "partnership", label: "Stockist Enquiry" },
+  // { id: "partnership", label: "Returns & Refunds" },
+  // { id: "partnership", label: "Stockist Enquiry" },
 
 ] as const;
 

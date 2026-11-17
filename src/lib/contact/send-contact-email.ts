@@ -12,9 +12,12 @@ type ContactMessage = {
 // (CONTACT_FROM_EMAIL must be an address on a domain you verified in Resend).
 // To use another provider (SendGrid, Postmark, SMTP), replace the body of this function.
 export async function sendContactEmail(msg: ContactMessage): Promise<void> {
-  const apiKey = process.env.RESEND_API_KEY;
+  const apiKey = process.env.RESEND_KEY;
   const to = process.env.CONTACT_TO_EMAIL;
   const from = process.env.CONTACT_FROM_EMAIL;
+  //   const apiKey = process.env.RESEND_API_KEY;
+  // const from = process.env.RESEND_FROM_EMAIL;
+  // const to = process.env.SUPPORT_FROM_EMAIL;
 
   if (!apiKey || !to || !from) {
     if (process.env.NODE_ENV !== "production") {
@@ -30,6 +33,7 @@ export async function sendContactEmail(msg: ContactMessage): Promise<void> {
 
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
+    signal: AbortSignal.timeout(8000),
     headers: {
       Authorization: `Bearer ${apiKey}`,
       "Content-Type": "application/json",
@@ -50,6 +54,7 @@ export async function sendContactEmail(msg: ContactMessage): Promise<void> {
   });
 
   if (!res.ok) {
-    throw new Error(`Email provider responded with ${res.status}`);
+      const body = await res.text().catch(() => "");
+    throw new Error(`Resend ${res.status}: ${body}`);
   }
 }

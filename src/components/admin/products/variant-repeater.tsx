@@ -25,7 +25,10 @@ export type VariantDraft = {
   name: string;
   sku: string;
   price: string; // kept as string while editing; parsed to number on submit
-  salePrice: string; // "" = no sale price (edited in the offer drawer)
+  
+    priceIdr: string;
+  salePriceIdr: string;
+  salePrice: string;
   saleStartsAt: string; // ISO date string, "" = none
   saleEndsAt: string; // ISO date string, "" = none
   stock: string;
@@ -44,8 +47,14 @@ export function emptyVariant(): VariantDraft {
     stock: "0",
     weight: "",
     status: "active",
+     
+    priceIdr: "",
+    salePriceIdr: "",
   };
-}
+    
+    
+  };
+
 
 type FieldErrors = Partial<Record<keyof VariantDraft, string>>;
 
@@ -136,9 +145,9 @@ export function VariantRepeater({
     //     ),
     // },
     {
-      title: `Price (${currency})`,
+      title: "Price (USD)",
       dataIndex: "price",
-      width: 120,
+      width: 110,
       render: (_, r) => (
         <Cell error={errors?.[r._index]?.price}>
           <Input
@@ -156,13 +165,35 @@ export function VariantRepeater({
       ),
     },
     {
+      title: "Price (IDR)",
+      dataIndex: "priceIdr",
+      width: 130,
+      render: (_, r) => (
+        <Cell error={errors?.[r._index]?.priceIdr}>
+          <Input
+            type="number"
+            min={0}
+            step="any"
+            className="w-full"
+            value={r.priceIdr}
+            placeholder="0"
+            status={errors?.[r._index]?.priceIdr ? "error" : undefined}
+            onChange={(e) => update(r._index, { priceIdr: e.target.value })}
+            onWheel={(e) => e.currentTarget.blur()}
+          />
+        </Cell>
+      ),
+    },
+    {
       title: "Offer",
       dataIndex: "salePrice",
-      width: 110,
+      width: 140,
       render: (_, r) =>
-        r.salePrice !== "" ? (
+        r.salePrice !== "" || r.salePriceIdr !== "" ? (
           <span className="text-[13px] font-medium text-[#389e0d]">
-            {formatMoney(Number(r.salePrice), currency)}
+            {r.salePrice !== "" && formatMoney(Number(r.salePrice), "USD")}
+            {r.salePrice !== "" && r.salePriceIdr !== "" && " / "}
+            {r.salePriceIdr !== "" && formatMoney(Number(r.salePriceIdr), "IDR")}
           </span>
         ) : (
           <span className="text-[12px] text-neutral-400">No offer</span>

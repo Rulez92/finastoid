@@ -8,7 +8,9 @@ export type RawVariant = {
   name: string;
   sku: string;
   price: number;
+  price_idr?: number | string | null;       // new
   sale_price: number | null;
+  sale_price_idr?: number | string | null;  // new
   sale_starts_at: string | null;
   sale_ends_at: string | null;
   stock: number;

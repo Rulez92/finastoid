@@ -76,6 +76,8 @@ export type ProductVariant = {
   stock: number;
   weight: number | null;
   status: ProductStatus;
+  priceIdr: number | null;
+salePriceIdr: number | null;
 };
 
 export type ProductCountryPrice = {
@@ -225,7 +227,7 @@ export async function getProductById(
       currency_code,
       meta_title, meta_description, sections, created_at, updated_at,
       product_images ( id, url, alt, storage_path, is_primary ),
-      product_variants ( id, name, sku, price, sale_price, sale_starts_at, sale_ends_at, stock, weight, status ),
+     product_variants ( id, name, sku, price, price_idr, sale_price, sale_price_idr, sale_starts_at, sale_ends_at, stock, weight, status ),
       product_country_prices (
         id, active, price, sale_price,
         countries ( id, name, currency_code )
@@ -273,6 +275,8 @@ export async function getProductById(
       stock: num(v.stock),
       weight: v.weight != null ? num(v.weight) : null,
       status: v.status,
+      priceIdr: v.price_idr != null ? num(v.price_idr) : null,
+salePriceIdr: v.sale_price_idr != null ? num(v.sale_price_idr) : null,
     })),
     countryPrices: (data.product_country_prices ?? []).map((cp) => {
       const c = Array.isArray(cp.countries) ? cp.countries[0] : cp.countries;

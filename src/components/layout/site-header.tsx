@@ -294,7 +294,7 @@ const router = useRouter();
               />
               <ShoppingBag
                 key={count}
-                className="relative h-[19px] w-[19px] animate-[finasto-bag-bump_350ms_ease-out] text-green transition-transform duration-300 group-hover:-rotate-12 group-hover:scale-110 group-active:-rotate-12 group-active:scale-110"
+                className="relative h-[19px] w-[19px] animate-[finasto-bag-bump_350ms_ease-out] text-green "
                 strokeWidth={1.6}
                 aria-hidden="true"
               />

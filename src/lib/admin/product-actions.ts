@@ -39,8 +39,12 @@ const variantBase = z.object({
   name: z.string().trim().min(1).max(60),
   sku: z.string().trim().max(40).optional(),
   price: z.number().finite().nonnegative(),
-  salePrice: z.number().finite().nonnegative().nullable(),
+    salePrice: z.number().finite().nonnegative().nullable(),
+  priceIdr: z.number().finite().nonnegative().nullable(),
+  salePriceIdr: z.number().finite().nonnegative().nullable(),
   saleStartsAt: z.string().datetime({ offset: true }).nullable().optional(),
+  // salePrice: z.number().finite().nonnegative().nullable(),
+  // saleStartsAt: z.string().datetime({ offset: true }).nullable().optional(),
   saleEndsAt: z.string().datetime({ offset: true }).nullable().optional(),
   stock: z.number().int().nonnegative(),
   weight: z.number().finite().nonnegative().nullable(),
@@ -49,8 +53,19 @@ const variantBase = z.object({
 
 // An offer price needs a valid window and must be below the regular price.
 const variantSchema = variantBase.superRefine((v, ctx) => {
-  if (v.salePrice == null) return;
-  if (v.salePrice >= v.price) {
+  if (
+    v.salePriceIdr != null &&
+    v.priceIdr != null &&
+    v.salePriceIdr >= v.priceIdr
+  ) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["salePriceIdr"],
+      message: "IDR offer price must be below the regular IDR price",
+    });
+  }
+  if (v.salePrice == null && v.salePriceIdr == null) return;
+  if (v.salePrice != null && v.salePrice >= v.price) {
     ctx.addIssue({
       code: "custom",
       path: ["salePrice"],
@@ -257,8 +272,7 @@ export async function updateProduct(
     };
   }
   const data = parsed.data;
-
-  const rateProblem = await currencyError(data.currencyCode);
+    const rateProblem = await currencyError(data.currencyCode);
   if (rateProblem) {
     return {
       success: false,
@@ -266,10 +280,22 @@ export async function updateProduct(
       fieldErrors: { currencyCode: [rateProblem] },
     };
   }
-
-  const supabase = await createClient();
+    const supabase = await createClient();
 
   const { error: productError } = await supabase
+
+  // const rateProblem = await currencyError(data.currencyCode);
+  // if (rateProblem) {
+  //   return {
+  //     success: false,
+  //     error: rateProblem,
+  //     fieldErrors: { currencyCode: [rateProblem] },
+  //   };
+  // }
+
+  // const supabase = await createClient();
+
+  // const { error: productError } = await supabase
     .from("products")
     .update({
       name: data.name,
@@ -438,9 +464,17 @@ async function upsertVariants(
     sku: v.sku && v.sku.trim() !== "" ? v.sku : makeSku(v.name),
     price: v.price,
     sale_price: v.salePrice,
+    price_idr: v.priceIdr,
+    sale_price_idr: v.salePriceIdr,
     // No offer price = no dates, so the database constraint always holds.
-    sale_starts_at: v.salePrice == null ? null : (v.saleStartsAt ?? null),
-    sale_ends_at: v.salePrice == null ? null : (v.saleEndsAt ?? null),
+    sale_starts_at:
+      v.salePrice == null && v.salePriceIdr == null
+        ? null
+        : (v.saleStartsAt ?? null),
+    sale_ends_at:
+      v.salePrice == null && v.salePriceIdr == null
+        ? null
+        : (v.saleEndsAt ?? null),
     stock: v.stock,
     weight: v.weight,
     status: v.status,

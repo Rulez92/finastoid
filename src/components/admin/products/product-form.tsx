@@ -98,6 +98,8 @@ function toVariantDraft(v: ProductDetail["variants"][number]): VariantDraft {
     name: v.name,
     sku: v.sku,
     price: String(v.price),
+    priceIdr: v.priceIdr != null ? String(v.priceIdr) : "",
+    salePriceIdr: v.salePriceIdr != null ? String(v.salePriceIdr) : "",
     salePrice: v.salePrice != null ? String(v.salePrice) : "",
     saleStartsAt: v.saleStartsAt ?? "",
     saleEndsAt: v.saleEndsAt ?? "",
@@ -156,6 +158,14 @@ function validateVariants(variants: VariantDraft[]): VariantErrors {
         e.salePrice = "Must be below price";
     }
 
+    if (v.priceIdr.trim() === "" || Number(v.priceIdr) < 0)
+      e.priceIdr = "Required";
+    if (
+      v.salePriceIdr.trim() !== "" &&
+      Number(v.salePriceIdr) >= Number(v.priceIdr)
+    )
+      e.salePriceIdr = "Must be below price";
+
     if (v.stock.trim() !== "") {
       const stock = Number(v.stock);
       if (!Number.isInteger(stock) || stock < 0) e.stock = "Whole number";
@@ -202,7 +212,7 @@ function buildInput(state: {
     origin: trimOrNull(values.origin),
     tastingNote: trimOrNull(values.tastingNote),
     accentColor: values.accentColor,
-    currencyCode: values.currencyCode,
+    currencyCode: "USD",
     category: trimOrNull(values.category),
     status: values.status,
     featured: !!values.featured,
@@ -221,6 +231,8 @@ function buildInput(state: {
       name: v.name,
       sku: v.sku.trim() === "" ? undefined : v.sku,
       price: emptyToZero(v.price),
+      priceIdr: emptyToNull(v.priceIdr),
+      salePriceIdr: emptyToNull(v.salePriceIdr),
       salePrice: emptyToNull(v.salePrice),
       saleStartsAt: v.saleStartsAt || null,
       saleEndsAt: v.saleEndsAt || null,
@@ -319,10 +331,11 @@ export function ProductForm({
   const [offerOpen, setOfferOpen] = useState(false);
   const watchedName = Form.useWatch("name", form) ?? "";
   const watchedCategory = Form.useWatch("category", form) ?? null;
-  const watchedCurrency =
-    Form.useWatch("currencyCode", form) ?? product?.currencyCode ?? "USD";
+  const watchedCurrency = "USD";
 
-  const offerVariants = variants.filter((v) => v.salePrice !== "");
+  const offerVariants = variants.filter(
+    (v) => v.salePrice !== "" || v.salePriceIdr !== "",
+  );
   const offerStart = offerVariants.find((v) => v.saleStartsAt)?.saleStartsAt;
   const offerEnd = offerVariants.find((v) => v.saleEndsAt)?.saleEndsAt;
   const nowMs = Date.now();
@@ -686,7 +699,7 @@ export function ProductForm({
                   </span>
                 }
               >
-                <Form.Item
+                {/* <Form.Item
                   label="Pricing currency"
                   name="currencyCode"
                   rules={[{ required: true, message: "Choose a currency" }]}
@@ -709,7 +722,7 @@ export function ProductForm({
                       className="mb-4"
                       message="Changing the currency does not convert existing prices. A price of 5000 stays 5000, but now in the new currency. Re-enter every price and offer."
                     />
-                  )}
+                  )} */}
 
                 <VariantRepeater
                   value={variants}
