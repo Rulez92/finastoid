@@ -114,6 +114,7 @@ export function roundMoney(amount: number, code: string): number {
 
 /** Symbols shown instead of the ISO code. Others use Intl's default. */
 const SYMBOLS: Record<string, string> = {
+   USD: "US$ ",
   IDR: "Rp",
   MYR: "RM",
   GBP: "£",
