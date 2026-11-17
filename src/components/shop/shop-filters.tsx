@@ -562,7 +562,10 @@ export function ShopFilters({
         />
 
         {/* Header band: always visible, never scrolls */}
-        <div className="flex shrink-0 items-center justify-between gap-3 border-b border-white/10 bg-green px-5 py-4 text-cream dark:border-black/10 dark:bg-copper dark:text-espresso-deep">
+        <div
+          onClick={() => setIsOpen((prev) => !prev)}
+          className="flex shrink-0 cursor-pointer items-center justify-between gap-3 border-b border-white/10 bg-green px-5 py-4 text-cream dark:border-black/10 dark:bg-copper dark:text-espresso-deep lg:cursor-default"
+        >
           <h2 className="flex items-center gap-2.5 font-sans text-[15px] font-semibold text-white">
             <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white ring-1 ring-white/25">
               <SlidersHorizontal

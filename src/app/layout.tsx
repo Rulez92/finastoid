@@ -13,6 +13,7 @@ import { ScrollToTop } from "@/components/layout/scroll-to-top";
 import { getStorefrontProducts } from "@/lib/storefront-queries";
 import { AuthLoadingProvider } from "@/components/AuthLoadingProvider";
 import { ProductsProvider } from "@/components/providers/products-provider";
+import NextTopLoader from "nextjs-toploader";
 const cormorant = localFont({
   variable: "--font-cormorant",
   display: "swap",
@@ -60,8 +61,14 @@ export default async function RootLayout({
         <ThemeProvider>
           <AntdRegistry>
             <AntdTheme>
+                            <NextTopLoader
+                color="#b87333"
+                height={3}
+                showSpinner={false}
+                shadow="0 0 10px #b87333"
+              />
               <IntroGate />
-                            <AuthLoadingProvider>
+              <AuthLoadingProvider>
                 <MarketProvider>
                   <ProductsProvider products={products}>
                     <CartProvider>
