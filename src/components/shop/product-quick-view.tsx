@@ -135,18 +135,18 @@ export function ProductQuickView({
                 onClose();
               }}
               disabled={isOutOfStock}
-              className="h-11 cursor-pointer rounded-full bg-gradient-to-b from-espresso to-espresso-deep px-7 font-sans text-[14px] font-medium text-cream shadow-sm transition-all hover:shadow-md dark:bg-none dark:bg-copper dark:text-espresso-deep dark:shadow-none dark:hover:bg-copper-light disabled:cursor-not-allowed disabled:bg-none disabled:bg-disabled disabled:shadow-none dark:disabled:bg-disabled dark:disabled:text-espresso"
+              className="h-11 cursor-pointer rounded-full bg-gradient-to-b from-green to-espresso-deep px-7 font-sans text-[14px] font-medium text-cream shadow-sm transition-all hover:shadow-md dark:bg-none dark:bg-copper dark:text-espresso-deep dark:shadow-none dark:hover:bg-copper-light disabled:cursor-not-allowed disabled:bg-none disabled:bg-disabled disabled:shadow-none dark:disabled:bg-disabled dark:disabled:text-espresso"
             >
-              {isOutOfStock ? "Out of stock" : "Add to cart"}
+              {isOutOfStock ? "Out of stock" : "Coming Soon"}
             </button>
-            <Link
+            {/* <Link
               href={`/shop/${product.slug}`}
               target="_blank"
               rel="noopener noreferrer"
               className="font-sans text-[13px] font-medium text-copper underline-offset-4 hover:underline"
             >
               View full details
-            </Link>
+            </Link> */}
           </div>
         </div>
       </div>

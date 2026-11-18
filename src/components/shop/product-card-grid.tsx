@@ -53,7 +53,9 @@ const { bind: cartBind } = usePointerActive();
   return (
     <article {...cardBind} className="group relative flex flex-col overflow-hidden rounded-[16px] border border-border-strong bg-white shadow-[0_1px_2px_rgba(50,30,24,0.06)] transition-all duration-300 data-[active=true]:shadow-[0_8px_24px_rgba(50,30,24,0.08)] dark:border-border dark:shadow-none dark:data-[active=true]:border-copper/40">
       <Link
-        href={`/shop/${product.slug}`}
+        // href={`/shop/${product.slug}`}
+        href={``}
+
         tabIndex={-1}
         aria-hidden="true"
         className="relative block aspect-square w-full overflow-hidden"
