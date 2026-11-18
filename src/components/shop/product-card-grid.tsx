@@ -53,8 +53,8 @@ const { bind: cartBind } = usePointerActive();
   return (
     <article {...cardBind} className="group relative flex flex-col overflow-hidden rounded-[16px] border border-border-strong bg-white shadow-[0_1px_2px_rgba(50,30,24,0.06)] transition-all duration-300 data-[active=true]:shadow-[0_8px_24px_rgba(50,30,24,0.08)] dark:border-border dark:shadow-none dark:data-[active=true]:border-copper/40">
       <Link
-        // href={`/shop/${product.slug}`}
-        href={``}
+        href={`/shop/${product.slug}`}
+        // href={``}
 
         tabIndex={-1}
         aria-hidden="true"
@@ -123,14 +123,14 @@ className="absolute right-3 top-14 z-20 flex h-9 w-9 cursor-pointer items-center
         <p className="font-sans text-[11px] uppercase tracking-[0.12em] text-warm-gray">
           {product.category}
         </p>
-        {/* <h3 className="mt-1 font-sans text-[15px] font-semibold text-espresso">
+        <h3 className="mt-1 font-sans text-[15px] font-semibold text-espresso">
           <Link
             href={`/shop/${product.slug}`}
             className="after:absolute after:inset-0 after:z-10 after:rounded-[16px] focus-visible:outline-none focus-visible:after:outline focus-visible:after:outline-2 focus-visible:after:outline-offset-2 focus-visible:after:outline-copper"
           >
             {product.name}
           </Link>
-        </h3> */}
+        </h3>
         {product.tagline.length > 0 && (
           <ul className="mt-2 flex flex-wrap gap-1.5">
             {product.tagline.slice(0, 2).map((word) => (

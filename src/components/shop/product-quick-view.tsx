@@ -139,14 +139,14 @@ export function ProductQuickView({
             >
               {isOutOfStock ? "Out of stock" : "Coming Soon"}
             </button>
-            {/* <Link
+            <Link
               href={`/shop/${product.slug}`}
               target="_blank"
               rel="noopener noreferrer"
               className="font-sans text-[13px] font-medium text-copper underline-offset-4 hover:underline"
             >
               View full details
-            </Link> */}
+            </Link>
           </div>
         </div>
       </div>

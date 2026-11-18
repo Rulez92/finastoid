@@ -363,7 +363,7 @@ export function ProductDetail({ product }: { product: Product }) {
           )}
 
           {/* Buy box */}
-          <div
+          {/* <div
             ref={buyRef}
             className="relative mt-7 overflow-hidden rounded-3xl border border-[#e4dac8] bg-white p-5 shadow-[0_18px_40px_-28px_rgba(16,38,15,0.4)] dark:border-border sm:p-6"
           >
@@ -449,7 +449,7 @@ export function ProductDetail({ product }: { product: Product }) {
                 </li>
               ))}
             </ul>
-          </div>
+          {/* </div>  */}
 
           {/* Tabs */}
           {tabs.length > 0 && (
