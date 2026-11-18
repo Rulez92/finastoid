@@ -35,7 +35,8 @@ export type MySettings = {
   displayCurrency: string | null; // set from the country, locked
   profileLocked: boolean; // false = username/phone/country still to be set
   region: string | null;
-  commissionPercent: number; // set by the admin, read-only here
+  commissionPercent: number; // effective rate (tier or override), read-only
+  commissionTier: string;
   bank: MyBankDetails | null; // null until the affiliate saves them
   countries: string[]; // suggestions for the Country field
 };
@@ -48,7 +49,23 @@ const num = (v: unknown): number => {
   const n = Number(v);
   return Number.isFinite(n) ? n : 0;
 };
+// Same tiers as affiliate-queries.ts. Monthly sales is 0 until Orders
+// exists, so everyone resolves to Basic. A non-null override wins.
+const COMMISSION_TIERS = [
+  { name: "Champion", minSales: 500, percent: 24 },
+  { name: "Superior", minSales: 300, percent: 21 },
+  { name: "Plus", minSales: 100, percent: 18 },
+  { name: "Basic", minSales: 0, percent: 15 },
+] as const;
 
+function resolveCommission(
+  monthlySales: number,
+  override: unknown,
+): { tier: string; percent: number } {
+  if (override != null) return { tier: "Custom", percent: num(override) };
+  const t = COMMISSION_TIERS.find((x) => monthlySales >= x.minSales)!;
+  return { tier: t.name, percent: t.percent };
+}
 // An embedded relation can come back as an object or a one-element array.
 function embeddedOne<T>(value: unknown): T | null {
   const first = Array.isArray(value) ? value[0] : value;
@@ -77,7 +94,7 @@ export async function getMySettings(): Promise<MySettings | null> {
     supabase
       .from("affiliates")
       .select(
-        "id, name, email, phone, country, country_code, display_currency, profile_locked_at, region, commission_percent, affiliate_bank_details ( account_holder_name, bank_name, bank_country, account_number_or_iban, swift_bic, routing_code, payout_currency )",
+        "id, name, email, phone, country, country_code, display_currency, profile_locked_at, region, commission_override_percent, affiliate_bank_details ( account_holder_name, bank_name, bank_country, account_number_or_iban, swift_bic, routing_code, payout_currency )",
       )
       .eq("profile_id", user.id)
       .neq("status", "deleted")
@@ -97,6 +114,8 @@ export async function getMySettings(): Promise<MySettings | null> {
     .map((c) => c.name as string)
     .filter(Boolean);
 
+  const commission = resolveCommission(0, data.commission_override_percent);
+
   return {
     affiliateId: data.id,
     name: data.name ?? null,
@@ -107,7 +126,8 @@ export async function getMySettings(): Promise<MySettings | null> {
     displayCurrency: data.display_currency ?? null,
     profileLocked: !!data.profile_locked_at,
     region: data.region,
-    commissionPercent: num(data.commission_percent),
+    commissionPercent: commission.percent,
+    commissionTier: commission.tier,
     bank: bank
       ? {
           accountHolderName: bank.account_holder_name,

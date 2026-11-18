@@ -1,13 +1,15 @@
 import { Percent } from "lucide-react";
 
-// Read-only card: the commission rate is set by the admin and the
-// affiliate can only see it. No client code needed, so this stays a
-// server component.
+// Read-only card: the rate is calculated automatically from monthly
+// sales (or a custom override set by the admin). The affiliate can only
+// see it. No client code needed, so this stays a server component.
 
 export function CommissionCard({
   commissionPercent,
+  commissionTier,
 }: {
   commissionPercent: number;
+  commissionTier: string;
 }) {
   const isSet = commissionPercent > 0;
 
@@ -27,15 +29,22 @@ export function CommissionCard({
 </h1>
             <p className="mt-1 max-w-md font-sans text-[13px] leading-relaxed text-aff-cream-50/75">
               {isSet
-                ? "This is the share of each eligible sale you earn. It is set by Finasto™. To ask for a change, please contact the Finasto team."
-                : "Your commission rate has not been set yet. The Finasto™ team will set it for you."}
+                ? "This is the share of each eligible sale you earn. It is based on your monthly sales tier. To ask about a change, please contact the Finasto team."
+                : "Your commission rate is not available yet. Please contact the Finasto team."}
             </p>
           </div>
 
           <div className="flex shrink-0 items-center gap-3 rounded-xl border border-aff-gold-400/40 bg-aff-green-950/60 px-4 py-3">
-            <span className="font-display text-[26px] leading-none tabular-nums text-aff-gold-300">
-              {isSet ? `${commissionPercent}%` : "Not set"}
-            </span>
+            <div className="text-right">
+              <span className="font-display text-[26px] leading-none tabular-nums text-aff-gold-300">
+                {isSet ? `${commissionPercent}%` : "Not set"}
+              </span>
+              {isSet && (
+                <p className="mt-1 font-sans text-[12px] text-aff-cream-50/75">
+                  {commissionTier} tier
+                </p>
+              )}
+            </div>
           </div>
         </div>
       </div>

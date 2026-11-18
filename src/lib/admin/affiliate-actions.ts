@@ -34,7 +34,7 @@ const affiliateInputSchema = z.object({
   stockistId: z.string().uuid().nullable(), // optional: null = unassigned
   notes: z.string().trim().max(2000).nullable(),
   status: z.enum(["active", "inactive"]), // "deleted" is a separate action
-  commissionPercent: z.number().finite().min(0).max(100),
+  
 });
 
 export type AffiliateInput = z.infer<typeof affiliateInputSchema>;
@@ -121,7 +121,6 @@ export async function createAffiliate(
       stockist_id: data.stockistId,
       notes: data.notes,
       status: data.status,
-      commission_percent: data.commissionPercent,
     })
     .select("id")
     .single();
@@ -311,7 +310,7 @@ export async function updateAffiliate(
       stockist_id: data.stockistId,
       notes: data.notes,
       status: data.status,
-      commission_percent: data.commissionPercent,
+      
     })
     .eq("id", id);
 

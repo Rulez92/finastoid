@@ -97,9 +97,14 @@ export function AffiliateTable({
       dataIndex: "commissionPercent",
       // align: "right",
       render: (_, item) => (
-        <span className="font-sans text-[13px] tabular-nums text-espresso">
-          {item.commissionPercent}%
-        </span>
+        <div>
+          <span className="font-sans text-[13px] tabular-nums text-espresso">
+            {item.commissionPercent}%
+          </span>
+          <p className="font-sans text-[11px] text-warm-gray">
+            {item.commissionTier}
+          </p>
+        </div>
       ),
     },
     {
@@ -347,7 +352,7 @@ function AffiliateCard({
         </dd>
         <dt className="text-warm-gray">Commission</dt>
         <dd className="text-right tabular-nums text-espresso">
-          {item.commissionPercent}%
+          {item.commissionPercent}% · {item.commissionTier}
         </dd>
         <dt className="text-warm-gray">Updated</dt>
         <dd className="text-right text-espresso/80">

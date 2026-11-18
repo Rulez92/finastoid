@@ -46,7 +46,7 @@ type FormValues = {
   stockistId?: string; // undefined = unassigned (converted to null on save)
   status: AffiliateStatus;
   notes: string;
-  commissionPercent: number;
+ 
 };
 
 const FORM_FIELDS: (keyof FormValues)[] = [
@@ -55,7 +55,7 @@ const FORM_FIELDS: (keyof FormValues)[] = [
   "stockistId",
   "status",
   "notes",
-  "commissionPercent",
+ 
 ];
 
 const trimOrNull = (s?: string) => (s && s.trim() !== "" ? s.trim() : null);
@@ -96,7 +96,7 @@ export function AffiliateForm({
     stockistId: affiliate?.stockistId ?? undefined,
     status: affiliate?.status ?? "active",
     notes: affiliate?.notes ?? "",
-    commissionPercent: affiliate?.commissionPercent ?? 10,
+   
   };
 
   function handleFinish(values: FormValues) {
@@ -108,7 +108,7 @@ export function AffiliateForm({
       stockistId: values.stockistId ?? null, // cleared Select => unassigned
       notes: trimOrNull(values.notes),
       status: values.status,
-      commissionPercent: values.commissionPercent ?? 0,
+      
     };
 
     startTransition(async () => {
@@ -211,23 +211,19 @@ export function AffiliateForm({
                 />
               </Form.Item>
 
-              <Form.Item
-                label="Commission %"
-                name="commissionPercent"
-                rules={[
-                  { required: true, message: "Enter a commission percentage" },
-                ]}
-                extra="The share of each sale this affiliate earns."
-              >
-                <InputNumber
-                  min={0}
-                  max={100}
-                  step={0.5}
-                  precision={2}
-                  suffix="%"
-                  className="!w-full"
-                />
-              </Form.Item>
+              {mode === "edit" && affiliate && (
+                <div className="mb-6">
+                  <div className="mb-1 text-[14px] text-neutral-900">
+                    Commission rate
+                  </div>
+                  <div className="rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2 text-[14px] text-neutral-900">
+                    {affiliate.commissionPercent}%
+                  </div>
+                  <div className="mt-1 text-[13px] text-neutral-500">
+                    Calculated automatically from monthly sales. Not editable.
+                  </div>
+                </div>
+              )}
 
               <Form.Item
                 label="Stockist"

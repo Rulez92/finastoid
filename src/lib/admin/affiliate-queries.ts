@@ -23,7 +23,23 @@ const num = (v: unknown): number => {
   const n = Number(v);
   return Number.isFinite(n) ? n : 0;
 };
+// Display-side tier lookup. Monthly sales is 0 until the Orders section
+// exists, so everyone resolves to Basic. A non-null override wins.
+const COMMISSION_TIERS = [
+  { name: "Champion", minSales: 500, percent: 24 },
+  { name: "Superior", minSales: 300, percent: 21 },
+  { name: "Plus", minSales: 100, percent: 18 },
+  { name: "Basic", minSales: 0, percent: 15 },
+] as const;
 
+function resolveCommission(
+  monthlySales: number,
+  override: unknown,
+): { tier: string; percent: number } {
+  if (override != null) return { tier: "Custom", percent: num(override) };
+  const t = COMMISSION_TIERS.find((x) => monthlySales >= x.minSales)!;
+  return { tier: t.name, percent: t.percent };
+}
 /* ------------------------------------------------------------------ */
 /* Types                                                                */
 /* ------------------------------------------------------------------ */
@@ -57,6 +73,7 @@ export type AffiliateListItem = {
   hasAccount: boolean; // true once profile_id is set (invite succeeded)
   profileComplete: boolean; // phone + country filled in by the affiliate
   commissionPercent: number;
+   commissionTier: string;
   bankComplete: boolean; // affiliate has saved bank details
   updatedAt: string;
 };
@@ -81,7 +98,9 @@ export type AffiliateDetail = {
   notes: string | null;
   hasAccount: boolean;
   profileComplete: boolean;
-  commissionPercent: number;
+  commissionPercent: number; // effective rate (tier or override)
+  commissionTier: string;
+  commissionOverridePercent: number | null;
   bankDetails: AffiliateBankDetails | null;
   bankComplete: boolean;
   // Safe zeros until the Orders section exists.
@@ -141,7 +160,7 @@ export async function listAffiliates(params: {
   let query = supabase
     .from("affiliates")
     .select(
-      "id, name, email, phone, country, status, stockist_id, profile_id, commission_percent, updated_at, stockists ( name ), affiliate_bank_details ( affiliate_id )",
+      "id, name, email, phone, country, status, stockist_id, profile_id, commission_override_percent, updated_at, stockists ( name ), affiliate_bank_details ( affiliate_id )",
       { count: "exact" },
     )
     .neq("status", "deleted") // soft-deleted rows never appear in the list
@@ -179,7 +198,9 @@ export async function listAffiliates(params: {
     stockistName: embeddedStockistName(row.stockists),
     hasAccount: row.profile_id != null,
     profileComplete: isProfileComplete(row),
-    commissionPercent: num(row.commission_percent),
+    commissionPercent: resolveCommission(0, row.commission_override_percent)
+      .percent,
+    commissionTier: resolveCommission(0, row.commission_override_percent).tier,
     bankComplete: embeddedOne(row.affiliate_bank_details) !== null,
     updatedAt: row.updated_at,
   }));
@@ -200,7 +221,7 @@ export async function getAffiliateById(
   const { data, error } = await supabase
     .from("affiliates")
     .select(
-      "id, name, email, phone, country, region, status, stockist_id, profile_id, commission_percent, notes, created_at, updated_at, stockists ( name ), affiliate_bank_details ( account_holder_name, bank_name, bank_country, account_number_or_iban, swift_bic, routing_code, payout_currency )",
+      "id, name, email, phone, country, region, status, stockist_id, profile_id, commission_override_percent, notes, created_at, updated_at, stockists ( name ), affiliate_bank_details ( account_holder_name, bank_name, bank_country, account_number_or_iban, swift_bic, routing_code, payout_currency )",
     )
     .eq("id", id)
     .neq("status", "deleted")
@@ -221,6 +242,8 @@ export async function getAffiliateById(
     payout_currency: string;
   }>(data.affiliate_bank_details);
 
+  const commission = resolveCommission(0, data.commission_override_percent);
+
   return {
     id: data.id,
     name: data.name,
@@ -234,7 +257,12 @@ export async function getAffiliateById(
     notes: data.notes,
     hasAccount: data.profile_id != null,
     profileComplete: isProfileComplete(data),
-    commissionPercent: num(data.commission_percent),
+    commissionPercent: commission.percent,
+    commissionTier: commission.tier,
+    commissionOverridePercent:
+      data.commission_override_percent == null
+        ? null
+        : num(data.commission_override_percent),
     bankDetails: bank
       ? {
           accountHolderName: bank.account_holder_name,
