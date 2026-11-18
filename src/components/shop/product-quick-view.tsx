@@ -130,10 +130,10 @@ export function ProductQuickView({
           <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
             <button
               type="button"
-              onClick={() => {
-                addItem(product.id);
-                onClose();
-              }}
+              // onClick={() => {
+              //   addItem(product.id);
+              //   onClose();
+              // }}
               disabled={isOutOfStock}
               className="h-11 cursor-pointer rounded-full bg-gradient-to-b from-green to-espresso-deep px-7 font-sans text-[14px] font-medium text-cream shadow-sm transition-all hover:shadow-md dark:bg-none dark:bg-copper dark:text-espresso-deep dark:shadow-none dark:hover:bg-copper-light disabled:cursor-not-allowed disabled:bg-none disabled:bg-disabled disabled:shadow-none dark:disabled:bg-disabled dark:disabled:text-espresso"
             >
