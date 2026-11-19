@@ -436,20 +436,22 @@ export function ProductDetail({ product }: { product: Product }) {
             </p>
 
             {/* Trust row */}
-            <ul className="mt-5 grid grid-cols-3 gap-2 border-t border-[#e4dac8] pt-4 dark:border-border">
-              {TRUST.map(({ icon: Icon, title, text }) => (
-                <li key={title} className="flex flex-col items-center text-center">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#eef3ea] text-green-deep">
-                    <Icon className="h-4 w-4" strokeWidth={1.7} aria-hidden="true" />
-                  </span>
-                  <p className="mt-2 font-sans text-[12px] font-semibold text-espresso">
-                    {title}
-                  </p>
-                  <p className="font-sans text-[11px] text-warm-gray">{text}</p>
-                </li>
-              ))}
-            </ul>
-          {/* </div>  */}
+            <ul className="mt-5 grid grid-cols-3 divide-x divide-[#e4dac8] border-t border-[#e4dac8] pt-5 dark:divide-border dark:border-border">
+  {TRUST.map(({ icon: Icon, title, text }) => (
+    <li key={title} className="group flex flex-col items-center px-2 text-center">
+      <span
+        className="flex h-11 w-11 items-center justify-center rounded-2xl border border-copper/50 bg-gradient-to-br from-green-deep to-green text-cream shadow-[0_10px_20px_-10px_rgba(35,77,42,0.9),inset_0_1px_0_rgba(255,255,255,0.22)] transition-all duration-300 motion-reduce:transition-none [@media(hover:hover)]:group-hover:-translate-y-0.5 [@media(hover:hover)]:group-hover:border-copper"
+      >
+        <Icon className="h-[18px] w-[18px]" strokeWidth={1.4} aria-hidden="true" />
+      </span>
+      <p className="mt-2.5 font-sans text-[12px] font-semibold tracking-wide text-espresso">
+        {title}
+      </p>
+      <p className="mt-0.5 font-sans text-[11px] text-warm-gray">{text}</p>
+    </li>
+  ))}
+</ul>
+            
 
           {/* Tabs */}
           {tabs.length > 0 && (
