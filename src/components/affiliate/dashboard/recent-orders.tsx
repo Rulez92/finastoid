@@ -155,11 +155,11 @@ export function RecentOrders({
                   <p className="font-sans text-[14px] font-semibold text-aff-green-900 [font-variant-numeric:tabular-nums]">
                     {a.original}
                   </p>
-                  {a.approx && (
+                  {/* {a.approx && (
                     <p className="ffont-sans text-[12px] text-aff-muted [font-variant-numeric:tabular-nums]">
                       {a.approx}
                     </p>
-                  )}
+                  )} */}
                   <span
                     className={`mt-1 inline-block rounded-full border px-2 py-0.5 font-sans text-[10.5px] font-medium ${
                       TONES[STATE_TONE[o.commissionState] ?? "gray"]

@@ -67,7 +67,7 @@ export default function PayoutRequestsList({
       dataIndex: "requestNumber",
       key: "requestNumber",
 
-      fixed: "left",
+    
       width: 160,
       render: (value: string) => (
         <span className="font-medium text-aff-green-900">{value}</span>
@@ -99,11 +99,11 @@ export default function PayoutRequestsList({
         return (
           <div>
             <strong>{converted.original}</strong>
-            {converted.approx && (
+            {/* {converted.approx && (
               <div className="text-[12px] text-aff-muted">
                 {converted.approx}
               </div>
-            )}
+            )} */}
           </div>
         );
       },
@@ -135,7 +135,7 @@ export default function PayoutRequestsList({
           hideOnSinglePage: true,
           showSizeChanger: false,
         }}
-        scroll={{ x: 640 }}
+               scroll={{ x: "max-content" }}
         locale={{ emptyText: "You have not sent any payout requests yet." }}
         expandable={{
           defaultExpandedRowKeys: requests
@@ -177,7 +177,9 @@ export default function PayoutRequestsList({
                   </Descriptions.Item>
                 )}
                 {r.totalPayoutAmount != null && (
-                  <Descriptions.Item label={`Approx. in ${r.payoutCurrency}`}>
+                  // <Descriptions.Item label={`Approx. in ${r.payoutCurrency}`}>
+                  <Descriptions.Item label={`${r.payoutCurrency}`}>
+
                     {money(r.totalPayoutAmount, r.payoutCurrency)}
                   </Descriptions.Item>
                 )}
@@ -219,11 +221,7 @@ export default function PayoutRequestsList({
                 )}
               </Descriptions>
 
-              {r.status === "paid" && (
-                <Typography.Text type="secondary">
-                  Payment proof is available on the Accounts page.
-                </Typography.Text>
-              )}
+             
             </div>
           ),
         }}

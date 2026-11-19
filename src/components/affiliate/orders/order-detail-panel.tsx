@@ -183,11 +183,11 @@ export function OrderDetailPanel({
                     <span className="font-sans text-[14px] tabular-nums text-aff-green-900">
                       {formatPrice(item.lineTotalUsd, "USD")}
                     </span>
-                    {approxUsd(item.lineTotalUsd) && (
+                    {/* {approxUsd(item.lineTotalUsd) && (
                       <span className="font-sans text-[11px] 	text-aff-muted">
                         {approxUsd(item.lineTotalUsd)}
                       </span>
-                    )}
+                    )} */}
                   </div>
                 </li>
               ))}
@@ -198,11 +198,11 @@ export function OrderDetailPanel({
                 <dt className="	text-aff-muted">Order total (USD)</dt>
                 <dd className="text-right tabular-nums text-aff-green-900">
                   {formatPrice(order.totalUsd, "USD")}
-                  {approxUsd(order.totalUsd) && (
+                  {/* {approxUsd(order.totalUsd) && (
                     <span className="block text-[11px] 	text-aff-muted">
                       {approxUsd(order.totalUsd)}
                     </span>
-                  )}
+                  )} */}
                 </dd>
               </div>
               {!sameCurrency && (
@@ -212,11 +212,11 @@ export function OrderDetailPanel({
                   </dt>
                   <dd className="text-right tabular-nums text-aff-green-900">
                     {formatPrice(order.totalAmount, order.orderCurrency)}
-                    {approxPaid && (
+                    {/* {approxPaid && (
                       <span className="block text-[11px] 	text-aff-muted">
                         {approxPaid}
                       </span>
-                    )}
+                    )} */}
                   </dd>
                 </div>
               )}
@@ -300,11 +300,11 @@ export function OrderDetailPanel({
                   ? formatPrice(order.commissionUsd, "USD")
                   : "—"}
               </p>
-              {showCommissionAmount && approxUsd(order.commissionUsd) && (
+              {/* {showCommissionAmount && approxUsd(order.commissionUsd) && (
                 <p className="mt-1 font-sans text-[13px] text-aff-cream-50/70">
                   {approxUsd(order.commissionUsd)}
                 </p>
-              )}
+              )} */}
               {showCommissionAmount && (
                 <p className="font-sans text-[12px] text-aff-cream-50/70">
                   {order.commissionPercent}% of{" "}

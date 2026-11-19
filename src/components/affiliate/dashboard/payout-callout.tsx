@@ -60,11 +60,11 @@ export function PayoutCallout({
           </p>
           <p className="mt-1 break-words font-display text-[24px] font-semibold leading-tight text-espresso [font-variant-numeric:tabular-nums]">
             {amount.original}
-            {amount.approx ? (
+            {/* {amount.approx ? (
               <span className="ml-2 font-sans text-[12px] font-normal text-warm-gray">
                 ({amount.approx})
               </span>
-            ) : null}
+            ) : null} */}
           </p>
           <p className="mt-1 font-sans text-[12px] text-warm-gray">
             After the refund window, minus any refund adjustments.

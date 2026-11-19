@@ -120,11 +120,14 @@ export function OrdersChart({
   const totalCommission = daily.reduce((sum, d) => sum + d.commissionUsd, 0);
   const isEmpty = totalOrders === 0 && totalCommission === 0;
 
-  // "$12.50" or "$12.50 (approx. ...)" when another currency is chosen.
-  const commissionText = (n: number) => {
-    const a = amount(n);
-    return a.approx ? `${a.original} (${a.approx})` : a.original;
-  };
+  // // "$12.50" or "$12.50 (approx. ...)" when another currency is chosen.
+  // const commissionText = (n: number) => {
+  //   const a = amount(n);
+  //   return a.approx ? `${a.original} (${a.approx})` : a.original;
+  // };
+  
+  const commissionText = (n: number) => amount(n).original;
+   
 
   const headline =
     metric === "commission"

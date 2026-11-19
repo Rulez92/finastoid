@@ -29,7 +29,7 @@ export function CommissionCard({
 </h1>
             <p className="mt-1 max-w-md font-sans text-[13px] leading-relaxed text-aff-cream-50/75">
               {isSet
-                ? "This is the share of each eligible sale you earn. It is based on your monthly sales tier. To ask about a change, please contact the Finasto team."
+                ? "Your earnings share per eligible sale, based on your monthly sales tier."
                 : "Your commission rate is not available yet. Please contact the Finasto team."}
             </p>
           </div>

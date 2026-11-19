@@ -338,8 +338,40 @@ export function AffiliateSidebar({
         className="relative z-10 flex-1 overflow-y-auto px-3.5 py-3"
       >
         <ul className="flex flex-col gap-2">
-          {affiliateNav.map(({ label, href, icon: Icon }) => {
+                   {affiliateNav.map(({ label, href, icon: Icon, badge, disabled }) => {
             const active = isNavActive(pathname, href);
+                        if (disabled) {
+              return (
+                <li key={href}>
+                  <div
+                    aria-disabled="true"
+                    title={collapsed ? `${label} (${badge ?? "Unavailable"})` : undefined}
+                    className={cn(
+                      "relative flex cursor-not-allowed select-none items-center gap-3.5 rounded-xl px-3.5 py-2.5 font-sans text-[14px] text-aff-cream-50/45",
+                      collapsed && "lg:justify-center lg:gap-0 lg:px-0",
+                    )}
+                  >
+                    <Icon
+                      className="h-[18px] w-[18px] shrink-0"
+                      strokeWidth={1.6}
+                    />
+                    <span className={cn("truncate", collapsed && "lg:hidden")}>
+                      {label}
+                    </span>
+                    {badge && (
+                      <span
+                        className={cn(
+                          "ml-auto shrink-0 rounded-full border border-aff-gold-400/40 bg-aff-gold-400/10 px-2 py-0.5 font-sans text-[10px] font-medium text-aff-gold-300",
+                          collapsed && "lg:hidden",
+                        )}
+                      >
+                        {badge}
+                      </span>
+                    )}
+                  </div>
+                </li>
+              );
+            }
             return (
               <li key={href}>
                 <motion.div
@@ -374,6 +406,19 @@ export function AffiliateSidebar({
                     >
                       {label}
                     </span>
+                    {badge && (
+                      <span
+                        className={cn(
+                          "ml-auto shrink-0 rounded-full border px-2 py-0.5 font-sans text-[10px] font-medium",
+                          collapsed && "lg:hidden",
+                          active
+                            ? "border-aff-green-950/30 bg-aff-green-950/10 text-aff-green-950"
+                            : "border-aff-gold-400/40 bg-aff-gold-400/10 text-aff-gold-300",
+                        )}
+                      >
+                        {badge}
+                      </span>
+                    )}
                   </Link>
                 </motion.div>
               </li>

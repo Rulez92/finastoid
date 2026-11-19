@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 import { getMySettings } from "@/lib/affiliate/settings-queries";
-import { CommissionCard } from "@/components/affiliate/settings/commission-card";
 import { ProfileForm } from "@/components/affiliate/settings/profile-form";
 import { BankDetailsForm } from "@/components/affiliate/settings/bank-details-form";
 import { Metadata } from "next";
@@ -22,10 +21,7 @@ export default async function AffiliateSettingsPage() {
   return (
     <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-6">
       
-      <CommissionCard
-  commissionPercent={settings.commissionPercent}
-  commissionTier={settings.commissionTier}
-/>
+    
       <ProfileForm settings={settings} />
       <BankDetailsForm settings={settings} />
     </div>

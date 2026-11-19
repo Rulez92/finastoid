@@ -401,6 +401,8 @@ import { getMyReferralLink } from "@/lib/affiliate/referral-link-queries";
 import { getAffiliateDisplay } from "@/lib/affiliate/display-currency";
 import { parseRange } from "@/lib/affiliate/dashboard-ranges";
 import { Reveal } from "@/components/affiliate/dashboard/reveal";
+import { getMySettings } from "@/lib/affiliate/settings-queries";
+import { CommissionCard } from "@/components/affiliate/settings/commission-card";
 // import { GrowthStrip } from "@/components/affiliate/dashboard/growth-strip";
 
 // Always read fresh numbers for the signed-in affiliate.
@@ -416,14 +418,15 @@ export default async function AffiliateDashboardPage({
   const { range: rawRange } = await searchParams;
   const range = parseRange(Array.isArray(rawRange) ? rawRange[0] : rawRange);
   // Independent reads run together instead of one after another.
-  const [data, { currency, rates }, link] = await Promise.all([
+ const [data, { currency, rates }, link, settings] = await Promise.all([
     getMyDashboard(range),
     getAffiliateDisplay(), // locked display currency + rates (display only)
     getMyReferralLink(),
+     getMySettings(),
   ]);
 
   // Safety net: the layout normally blocks a login with no affiliate row.
-  if (!data) {
+if (!data || !settings) {
     return (
       <div className="relative mx-auto mt-6 w-full max-w-lg overflow-hidden rounded-2xl border border-aff-border bg-white p-6 text-center sm:p-8">
         <span
@@ -437,7 +440,9 @@ export default async function AffiliateDashboardPage({
           We could not find an affiliate account for this login. Contact
           support if this looks wrong.
         </p>
+        
       </div>
+      
     );
   }
   // New affiliate = nothing has happened on the account yet.
@@ -453,6 +458,7 @@ export default async function AffiliateDashboardPage({
     // parent instead of forcing sideways scroll on small phones.
     // gap-3 on phones, gap-4 from sm up (desktop value unchanged).
     <div className="flex w-full min-w-0 flex-col gap-3 sm:gap-4">
+   
       {/* Welcome banner: dark botanical green, gold edge, artwork on the right */}
       <Reveal>
         <header className="rounded-2xl bg-gradient-to-br from-aff-gold-600 via-aff-gold-300 to-aff-gold-500 p-[1.5px] shadow-[0_18px_44px_-20px_rgba(172,131,78,0.55)]">
@@ -493,18 +499,25 @@ export default async function AffiliateDashboardPage({
                 </p>
               </div>
 
-              <p className="inline-flex w-fit max-w-full items-center gap-2 rounded-full border border-aff-gold-400/40 bg-aff-green-950/60 px-3 py-1.5 font-sans text-[11.5px] font-medium text-aff-gold-300 min-[400px]:px-3.5 min-[400px]:text-[12px]">
+              {/* <p className="inline-flex w-fit max-w-full items-center gap-2 rounded-full border border-aff-gold-400/40 bg-aff-green-950/60 px-3 py-1.5 font-sans text-[11.5px] font-medium text-aff-gold-300 min-[400px]:px-3.5 min-[400px]:text-[12px]">
                 <span
                   aria-hidden="true"
                   className="h-1.5 w-1.5 shrink-0 rounded-full bg-aff-gold-300 shadow-[0_0_8px_2px_rgba(241,204,156,0.6)]"
                 />
                 <span className="truncate">Your Currency is {currency}</span>
-              </p>
+              </p> */}
+               <Reveal delay={0.05}>
+  <CommissionCard
+    commissionPercent={settings.commissionPercent}
+    commissionTier={settings.commissionTier}
+  />
+</Reveal>
             </div>
+            
           </div>
         </header>
       </Reveal>
-
+  
       {/* grid-cols-1 = minmax(0,1fr): children can shrink, so charts/tables
           never push the page wider than the screen. lg+ is unchanged. */}
       <div className="grid grid-cols-1 gap-3 sm:gap-4 lg:grid-cols-3">

@@ -468,7 +468,7 @@ export function EarningsDonut({
   ];
 
   const total = slices.reduce((sum, s) => sum + s.value, 0);
-  const totalApprox = withApprox(total, "USD", currency, rates).approx;
+  // const totalApprox = withApprox(total, "USD", currency, rates).approx;
 
   const totalText = usd(total);
   // Shrink the font as the amount gets longer, and wrap instead of cutting it.
@@ -515,11 +515,11 @@ export function EarningsDonut({
           >
             {totalText}
           </p>
-          {totalApprox && (
+          {/* {totalApprox && (
             <p className="mt-0.5 break-words font-sans text-[13px] text-aff-cream-50/70 [font-variant-numeric:tabular-nums]">
               {totalApprox}
             </p>
-          )}
+          )} */}
           <p className="mt-1 font-sans text-[12px] text-aff-cream-50/70">
             Total across all statuses
           </p>

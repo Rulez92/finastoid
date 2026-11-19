@@ -143,9 +143,9 @@ function EarningsCard({
       >
         {value}
       </p>
-      {approx && (
+      {/* {approx && (
         <p className={cn("mt-1.5 font-sans text-[12px]", a.sub)}>{approx}</p>
-      )}
+      )} */}
       <span
         className={cn(
           "mt-4 inline-flex w-fit items-center gap-2 rounded-full px-3 py-1 font-sans text-[12px] font-medium",
@@ -251,7 +251,7 @@ export default function EligibleOrdersTable({
         <EarningsCard
           title="Available"
           value={usd(summary.availableUsd)}
-          approx={amount(summary.availableUsd).approx}
+          // approx={amount(summary.availableUsd).approx}
           icon={Wallet}
          accent="hero"
           badge="Ready for payout"
@@ -264,7 +264,7 @@ export default function EligibleOrdersTable({
         <EarningsCard
           title="Pending"
           value={usd(summary.pendingUsd)}
-          approx={amount(summary.pendingUsd).approx}
+          // approx={amount(summary.pendingUsd).approx}
           icon={Clock}
           accent="gold"
           badge="Processing"
@@ -272,7 +272,7 @@ export default function EligibleOrdersTable({
         <EarningsCard
           title="In review"
           value={usd(summary.inReviewUsd)}
-          approx={amount(summary.inReviewUsd).approx}
+          // approx={amount(summary.inReviewUsd).approx}
           icon={ShieldCheck}
           accent="teal"
           badge="Under review"
@@ -280,7 +280,7 @@ export default function EligibleOrdersTable({
         <EarningsCard
           title="Paid"
           value={usd(summary.paidUsd)}
-          approx={amount(summary.paidUsd).approx}
+          // approx={amount(summary.paidUsd).approx}
           icon={CheckCircle2}
          accent="emerald"
           badge="Completed"
@@ -346,11 +346,11 @@ export default function EligibleOrdersTable({
             <span className="break-words font-display text-[22px] font-semibold leading-tight text-aff-gold-300">
               {usd(total)}
             </span>
-            {amount(total).approx && (
+            {/* {amount(total).approx && (
               <span className="font-sans text-[12px] text-aff-cream-50/70">
                 {amount(total).approx}
               </span>
-            )}
+            )} */}
             {summary.refundAdjustmentsUsd < 0 && !noneSelected && (
               <span className="font-sans text-[12px] text-aff-cream-50/70">
                 {usd(itemsTotal)} commission {usd(summary.refundAdjustmentsUsd)}{" "}

@@ -7,6 +7,8 @@ import {
   Settings,
   type LucideIcon,
   MessageCircle,
+  Megaphone,
+  Palette,
 } from "lucide-react";
 
 // Single source of truth for the affiliate sidebar AND the top-bar title
@@ -17,6 +19,8 @@ export type AffiliateNavItem = {
   label: string;
   href: string;
   icon: LucideIcon;
+    badge?: string;
+    disabled?: boolean
 };
 
 export const affiliateNav: AffiliateNavItem[] = [
@@ -24,9 +28,17 @@ export const affiliateNav: AffiliateNavItem[] = [
   // { label: "Referral Links", href: "/affiliate/links", icon: Link2 },
   { label: "Orders", href: "/affiliate/orders", icon: ShoppingBag },
   { label: "Payout Requests", href: "/affiliate/payouts", icon: Wallet },
-  { label: "Accounts", href: "/affiliate/accounts", icon: Receipt },
-  { label: "Settings", href: "/affiliate/settings", icon: Settings },
+ { label: "Announcements", href: "/affiliate/announcements", icon: Megaphone },
+{
+  label: "Marketing Tools",
+  href: "/affiliate/marketingtools",
+  icon: Palette,
+  badge: "Soon",
+  disabled: true,
+},
   { label: "Support", href: "/affiliate/support", icon: MessageCircle },
+  { label: "Settings", href: "/affiliate/settings", icon: Settings },
+
 ];
 
 export function isNavActive(pathname: string, href: string) {

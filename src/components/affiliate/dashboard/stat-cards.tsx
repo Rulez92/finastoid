@@ -582,11 +582,11 @@ function QuietCard({
         <CountUp value={value} format={format} />
       </p>
 
-      {approx && (
+      {/* {approx && (
         <p className="mt-1.5 break-words font-sans text-[12px] text-aff-muted [font-variant-numeric:tabular-nums]">
           {approx}
         </p>
-      )}
+      )} */}
       {hint && (
         <p className="mt-1.5 break-words font-sans text-[12px] text-aff-muted">
           {hint}
@@ -665,11 +665,11 @@ function HeroCard({
           <CountUp value={value} format={format} />
         </p>
 
-        {approx && (
+        {/* {approx && (
           <p className="mt-1.5 break-words font-sans text-[13px] text-aff-cream-50/70 [font-variant-numeric:tabular-nums]">
             {approx}
           </p>
-        )}
+        )} */}
         {hint && (
           <p className="mt-1.5 break-words font-sans text-[12px] text-aff-cream-50/70">
             {hint}

@@ -105,15 +105,26 @@ export default async function AffiliateOrdersPage({
                   Orders placed through your referral links, with their status
                   and the commission you earn on each.
                 </p>
+                
               </div>
-
-              <p className="inline-flex w-fit max-w-full items-center gap-2 rounded-full border border-aff-gold-400/40 bg-aff-green-950/60 px-3.5 py-1.5 font-sans text-[12px] font-medium text-aff-gold-300">
+                    
+        <div className="flex w-fit shrink-0 items-center gap-3 rounded-xl border border-aff-gold-400/90 bg-aff-green-950/60 px-17 py-7">
+                <span className="font-display text-[26px] font-semibold leading-none tabular-nums text-aff-gold-300 sm:text-[30px]">
+                  {result.total}
+                </span>
+                <span className="font-sans text-[12px] leading-tight text-aff-cream-50/75">
+                  {result.total === 1 ? "order" : "Total Orders"}
+                 
+                  
+                </span>
+              </div>
+              {/* <p className="inline-flex w-fit max-w-full items-center gap-2 rounded-full border border-aff-gold-400/40 bg-aff-green-950/60 px-3.5 py-1.5 font-sans text-[12px] font-medium text-aff-gold-300">
                 <span
                   aria-hidden="true"
                   className="h-1.5 w-1.5 shrink-0 rounded-full bg-aff-gold-300 shadow-[0_0_8px_2px_rgba(241,204,156,0.6)]"
                 />
                 <span className="truncate">Your Currency is {currency}</span>
-              </p>
+              </p> */}
             </div>
           </div>
         </header>

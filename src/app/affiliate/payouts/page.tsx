@@ -49,13 +49,14 @@ export default async function AffiliatePayoutsPage() {
                 </p>
               </div>
 
-              <p className="inline-flex w-fit max-w-full items-center gap-2 rounded-full border border-aff-gold-400/40 bg-aff-green-950/60 px-3.5 py-1.5 font-sans text-[12px] font-medium text-aff-gold-300">
-                <span
-                  aria-hidden="true"
-                  className="h-1.5 w-1.5 shrink-0 rounded-full bg-aff-gold-300 shadow-[0_0_8px_2px_rgba(241,204,156,0.6)]"
-                />
-                <span className="truncate">Your Currency is {currency}</span>
-              </p>
+                            <div className="flex w-fit shrink-0 items-center gap-3 rounded-xl border border-aff-gold-400/90 bg-aff-green-950/60 px-17 py-5">
+                <span className="font-display text-[26px] font-semibold leading-none tabular-nums text-aff-gold-300 sm:text-[30px]">
+                  {requests.length}
+                </span>
+                <span className="font-sans text-[12px] leading-tight text-aff-cream-50/75">
+  {requests.length === 1 ? "Payout Request" : "Payout Requests"}
+</span>
+              </div>
             </div>
           </div>
         </header>

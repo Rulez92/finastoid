@@ -136,11 +136,11 @@ export function OrdersTable({
           <span className="font-sans text-[13px] tabular-nums text-aff-green-900">
             {formatPrice(order.totalAmount, order.orderCurrency)}
           </span>
-          {approx.total(order) && (
+          {/* {approx.total(order) && (
             <span className="font-sans text-[11px] text-aff-muted">
               {approx.total(order)}
             </span>
-          )}
+          )} */}
         </div>
       ),
     },
@@ -164,11 +164,11 @@ export function OrdersTable({
               ? `${formatPrice(order.commissionUsd, "USD")} (${order.commissionPercent}%)`
               : "—"}
           </span>
-          {approx.commission(order) && (
+          {/* {approx.commission(order) && (
             <span className="font-sans text-[11px] text-aff-muted">
               {approx.commission(order)}
             </span>
-          )}
+          )} */}
           <CommissionStateBadge state={order.commissionState} />
         </div>
       ),
