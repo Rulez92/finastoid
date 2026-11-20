@@ -132,15 +132,17 @@ export function BankDetailsForm({
       bordered={false}
      
       title={
-        <div className="leading-tight">
-          <div>Bank details</div>
+        <div className="whitespace-normal leading-tight">
+          <div className="font-display text-[18px] font-semibold text-aff-green-900">
+            Bank details
+          </div>
           <div className="font-sans text-[11px] font-semibold uppercase tracking-[0.16em] text-aff-gold-600">
             Finasto™ pays only to your own account
           </div>
         </div>
       }
       extra={
-        <span className="text-[13px] text-aff-muted">
+        <span className="hidden text-[13px] text-aff-muted sm:inline">
           Where Finasto pays your commissions
         </span>
       }

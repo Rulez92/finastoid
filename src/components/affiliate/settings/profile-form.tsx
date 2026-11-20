@@ -165,8 +165,10 @@ export function ProfileForm({
           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-aff-gold-300 via-aff-gold-400 to-aff-gold-600 text-aff-green-950">
             <UserRound className="h-5 w-5" strokeWidth={1.8} aria-hidden="true" />
           </span>
-          <div className="min-w-0 leading-tight">
-            <div>Profile</div>
+          <div className="min-w-0 whitespace-normal leading-tight">
+            <div className="font-display text-[18px] font-semibold text-aff-green-900">
+              Profile
+            </div>
             <div className="font-sans text-[11px] font-semibold uppercase tracking-[0.16em] text-aff-gold-600">
               Finasto™ · Brand Affiliate
             </div>

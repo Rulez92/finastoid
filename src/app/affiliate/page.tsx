@@ -523,7 +523,7 @@ if (!data || !settings) {
                                            {settings.commissionPercent}%
                     </p>
                     <p className="mt-1 font-sans text-[10px] uppercase tracking-[0.14em] text-aff-cream-50/75">
-                                          {settings.commissionTier} tier
+                                          {settings.commissionTier} 
                     </p>
                   </div>
                 </div>

@@ -229,7 +229,12 @@
   border-color: var(--color-aff-gold-500);
   color: var(--color-aff-green-900);
 }
-
+.aff-antd-card .ant-card-head-title {
+  color: var(--color-aff-green-900);
+  font-family: var(--font-display);
+  font-weight: 600;
+  white-space: normal;
+}
 /* Phones: full-width stacked buttons, primary on top */
 @media (max-width: 480px) {
   .aff-dialog .ant-modal-body { padding: 14px 16px; }
