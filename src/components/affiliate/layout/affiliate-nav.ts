@@ -9,6 +9,7 @@ import {
   MessageCircle,
   Megaphone,
   Palette,
+  BadgePercent,
 } from "lucide-react";
 
 // Single source of truth for the affiliate sidebar AND the top-bar title
@@ -29,13 +30,15 @@ export const affiliateNav: AffiliateNavItem[] = [
   { label: "Orders", href: "/affiliate/orders", icon: ShoppingBag },
   { label: "Payout Requests", href: "/affiliate/payouts", icon: Wallet },
  { label: "Announcements", href: "/affiliate/announcements", icon: Megaphone },
-{
-  label: "Marketing Tools",
-  href: "/affiliate/marketingtools",
-  icon: Palette,
-  badge: "Soon",
-  disabled: true,
-},
+ { label: "Self Purchase", href: "/app/shop", icon: BadgePercent },
+
+// {
+//   label: "Marketing Tools",
+//   href: "/affiliate/marketingtools",
+//   icon: Palette,
+//   badge: "Soon",
+//   disabled: true,
+// },
   { label: "Support", href: "/affiliate/support", icon: MessageCircle },
   { label: "Settings", href: "/affiliate/settings", icon: Settings },
 

@@ -127,3 +127,27 @@ export async function getMyPartnerAnnouncements(
 
   return { items, unreadCount: items.filter((i) => !i.isRead).length };
 }
+// Count only, for the sidebar badge. Loads ids, never announcement content.
+// RLS already limits rows to live announcements meant for this role.
+// A badge problem must never break the layout, so errors return 0.
+export async function getMyUnreadPartnerAnnouncementCount(
+  role: PartnerRole,
+): Promise<number> {
+  const { user } = await requireRole(role);
+  const supabase = await createClient();
+
+  const [annResult, readsResult] = await Promise.all([
+    supabase.from("partner_announcements").select("id").limit(100),
+    supabase
+      .from("partner_announcement_reads")
+      .select("announcement_id")
+      .eq("user_id", user.id),
+  ]);
+
+  if (annResult.error) return 0;
+
+  const readIds = new Set(
+    (readsResult.data ?? []).map((r) => r.announcement_id as string),
+  );
+  return (annResult.data ?? []).filter((a) => !readIds.has(a.id)).length;
+}

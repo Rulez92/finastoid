@@ -19,11 +19,15 @@ export function AffiliateShell({
   name,
   email,
   profileLocked,
+  unreadAnnouncements,
+  avatarUrl,
   children,
 }: {
   name: string | null;
   email: string;
   profileLocked: boolean;
+  unreadAnnouncements: number;
+  avatarUrl: string | null;
   children: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
@@ -77,6 +81,7 @@ export function AffiliateShell({
           onNavigate={() => setOpen(false)}
           collapsed={collapsed}
           onToggleCollapse={() => setCollapsed((c) => !c)}
+          unreadAnnouncements={unreadAnnouncements}
         />
       </aside>
       <div
@@ -101,7 +106,7 @@ export function AffiliateShell({
            
             <div className="min-w-0">
               <p className="hidden font-sans text-[10px] font-semibold uppercase tracking-[0.18em] text-aff-gold-600 sm:block">
-              Brand Promoter
+              Brand Affiliate
               </p>
               <h1 className="truncate font-display text-[20px] font-semibold leading-tight tracking-tight text-aff-green-900 sm:text-[22px]">
                 {title}
@@ -120,16 +125,25 @@ export function AffiliateShell({
             />
 
             <div className="flex items-center gap-2.5">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-green-deep to-green font-sans text-[12px] font-semibold text-aff-cream-50 ring-2 ring-aff-gold-500/60 ring-offset-2 ring-offset-aff-ivory">
-                {initials}
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-green-deep to-green font-sans text-[12px] font-semibold text-aff-cream-50 ring-2 ring-aff-gold-500/60 ring-offset-2 ring-offset-aff-ivory">
+                {avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={avatarUrl}
+                    alt=""
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  initials
+                )}
               </div>
               <div className="hidden min-w-0 md:block">
                 <p className="max-w-[160px] truncate font-sans text-[13px] leading-tight text-aff-green-900">
-                  {name || "Brand Promoter"}
+                  {name || "Brand Affiliate  "}
                 </p>
-                <p className="max-w-[160px] truncate font-sans text-[11px] leading-tight text-aff-muted">
+                {/* <p className="max-w-[160px] truncate font-sans text-[11px] leading-tight text-aff-muted">
                   {email}
-                </p>
+                </p> */}
               </div>
             </div>
           </div>

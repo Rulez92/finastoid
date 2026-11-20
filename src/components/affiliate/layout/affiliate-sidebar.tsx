@@ -268,10 +268,12 @@ export function AffiliateSidebar({
   onNavigate,
   collapsed = false,
   onToggleCollapse,
+  unreadAnnouncements = 0,
 }: {
   onNavigate?: () => void;
   collapsed?: boolean;
   onToggleCollapse?: () => void;
+  unreadAnnouncements?: number;
 }) {
   const pathname = usePathname();
 
@@ -338,8 +340,17 @@ export function AffiliateSidebar({
         className="relative z-10 flex-1 overflow-y-auto px-3.5 py-3"
       >
         <ul className="flex flex-col gap-2">
-                   {affiliateNav.map(({ label, href, icon: Icon, badge, disabled }) => {
+          {affiliateNav.map(
+            ({ label, href, icon: Icon, badge: staticBadge, disabled }) => {
             const active = isNavActive(pathname, href);
+            // "Soon" stays static; Announcements shows the live unread count.
+            const badge =
+              staticBadge ??
+              (href === "/affiliate/announcements" && unreadAnnouncements > 0
+                ? unreadAnnouncements > 9
+                  ? "9+"
+                  : String(unreadAnnouncements)
+                : undefined);
                         if (disabled) {
               return (
                 <li key={href}>
@@ -361,7 +372,7 @@ export function AffiliateSidebar({
                     {badge && (
                       <span
                         className={cn(
-                          "ml-auto shrink-0 rounded-full border border-aff-gold-400/40 bg-aff-gold-400/10 px-2 py-0.5 font-sans text-[10px] font-medium text-aff-gold-300",
+                          "ml-auto shrink-0 rounded-full border border-aff-gold-400/40 bg-aff-gold-400/10 px-2 py-0.5 font-sans text-[10px] font-medium text-cream",
                           collapsed && "lg:hidden",
                         )}
                       >

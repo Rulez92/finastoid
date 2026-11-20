@@ -23,6 +23,24 @@ import {
   normalizeSwift,
 } from "@/lib/affiliate/bank-validation";
 
+const AVATAR_BUCKET = "affiliate-avatars";
+const AVATAR_MAX_BYTES = 2 * 1024 * 1024; // matches the bucket limit
+
+// Check the real file signature, not the type the browser claims.
+function detectImageType(
+  bytes: Uint8Array,
+): { mime: string; ext: string } | null {
+  const starts = (sig: number[], offset = 0) =>
+    sig.every((b, i) => bytes[offset + i] === b);
+
+  if (starts([0x89, 0x50, 0x4e, 0x47])) return { mime: "image/png", ext: "png" };
+  if (starts([0xff, 0xd8, 0xff])) return { mime: "image/jpeg", ext: "jpg" };
+  if (starts([0x52, 0x49, 0x46, 0x46]) && starts([0x57, 0x45, 0x42, 0x50], 8)) {
+    return { mime: "image/webp", ext: "webp" };
+  }
+  return null;
+}
+
 /* ------------------------------------------------------------------ */
 /* Types and schemas                                                    */
 /* ------------------------------------------------------------------ */
@@ -259,5 +277,103 @@ export async function saveMyBankDetails(input: unknown): Promise<ActionResult> {
   }
 
   revalidatePath("/affiliate/settings");
+  return { success: true };
+}
+/* ------------------------------------------------------------------ */
+/* Profile photo                                                        */
+/* ------------------------------------------------------------------ */
+
+// FormData must contain one entry named "avatar".
+export async function uploadMyAvatar(formData: FormData): Promise<ActionResult> {
+  const { user } = await requireRole("affiliate");
+
+  const file = formData.get("avatar");
+  if (!(file instanceof File) || file.size === 0) {
+    return { success: false, error: "No image selected." };
+  }
+  if (file.size > AVATAR_MAX_BYTES) {
+    return { success: false, error: "The image must be 2 MB or smaller." };
+  }
+
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  const type = detectImageType(bytes);
+  if (!type) {
+    return { success: false, error: "Only PNG, JPG or WebP images are allowed." };
+  }
+
+  const supabase = await createClient();
+
+  // Only an active affiliate may change the photo. Read the old path so
+  // it can be deleted after the new one is saved.
+  const { data: row, error: rowError } = await supabase
+    .from("affiliates")
+    .select("id, status, avatar_path")
+    .eq("profile_id", user.id)
+    .maybeSingle();
+
+  if (rowError || !row || row.status !== "active") {
+    return { success: false, error: "Your account is not active." };
+  }
+
+  // The folder name must be the user's own id: the storage policy checks it.
+  const path = `${user.id}/avatar-${crypto.randomUUID()}.${type.ext}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from(AVATAR_BUCKET)
+    .upload(path, bytes, { contentType: type.mime, upsert: false });
+
+  if (uploadError) {
+    return {
+      success: false,
+      error: `Could not upload your photo: ${uploadError.message}`,
+    };
+  }
+
+  const { error: updateError } = await supabase
+    .from("affiliates")
+    .update({ avatar_path: path })
+    .eq("id", row.id);
+
+  if (updateError) {
+    await supabase.storage.from(AVATAR_BUCKET).remove([path]); // roll back
+    return {
+      success: false,
+      error: `Could not save your photo: ${updateError.message}`,
+    };
+  }
+
+  if (row.avatar_path) {
+    await supabase.storage.from(AVATAR_BUCKET).remove([row.avatar_path as string]);
+  }
+
+  revalidatePath("/affiliate", "layout");
+  return { success: true };
+}
+
+export async function removeMyAvatar(): Promise<ActionResult> {
+  const { user } = await requireRole("affiliate");
+  const supabase = await createClient();
+
+  const { data: row, error: rowError } = await supabase
+    .from("affiliates")
+    .select("id, avatar_path")
+    .eq("profile_id", user.id)
+    .maybeSingle();
+
+  if (rowError || !row) return { success: false, error: "Affiliate not found." };
+  if (!row.avatar_path) return { success: true };
+
+  const { error } = await supabase
+    .from("affiliates")
+    .update({ avatar_path: null })
+    .eq("id", row.id);
+
+  if (error) {
+    return { success: false, error: `Could not remove your photo: ${error.message}` };
+  }
+
+  await supabase.storage.from(AVATAR_BUCKET).remove([row.avatar_path as string]);
+
+  revalidatePath("/affiliate", "layout");
   return { success: true };
 }

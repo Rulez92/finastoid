@@ -506,18 +506,38 @@ if (!data || !settings) {
                 />
                 <span className="truncate">Your Currency is {currency}</span>
               </p> */}
-               <Reveal delay={0.05}>
+
+              {/* Premium tier badge (right side, sm and up) */}
+              <div className="hidden shrink-0 items-center gap-4 sm:flex">
+                <span
+                  aria-hidden="true"
+                  className="hidden h-12 w-px bg-gradient-to-b from-transparent via-aff-gold-400/50 to-transparent md:block"
+                />
+                <div className="relative flex h-24 w-24 items-center justify-center rounded-full border border-aff-gold-400/50 bg-aff-green-950/60 shadow-[0_0_28px_-4px_rgba(241,204,156,0.45)] md:h-28 md:w-28">
+                  <span
+                    aria-hidden="true"
+                    className="absolute inset-[5px] rounded-full border border-dashed border-aff-gold-400/30"
+                  />
+                  <div className="text-center">
+                    <p className="font-display text-[26px] leading-none tabular-nums text-aff-gold-300 md:text-[30px]">
+                                           {settings.commissionPercent}%
+                    </p>
+                    <p className="mt-1 font-sans text-[10px] uppercase tracking-[0.14em] text-aff-cream-50/75">
+                                          {settings.commissionTier} tier
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+      </Reveal>
+       <Reveal delay={0.05}>
   <CommissionCard
     commissionPercent={settings.commissionPercent}
     commissionTier={settings.commissionTier}
   />
 </Reveal>
-            </div>
-            
-          </div>
-        </header>
-      </Reveal>
-  
       {/* grid-cols-1 = minmax(0,1fr): children can shrink, so charts/tables
           never push the page wider than the screen. lg+ is unchanged. */}
       <div className="grid grid-cols-1 gap-3 sm:gap-4 lg:grid-cols-3">

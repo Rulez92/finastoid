@@ -35,6 +35,7 @@ export type MySettings = {
   displayCurrency: string | null; // set from the country, locked
   profileLocked: boolean; // false = username/phone/country still to be set
   region: string | null;
+  avatarUrl: string | null; // short-lived signed link, null = no photo
   commissionPercent: number; // effective rate (tier or override), read-only
   commissionTier: string;
   bank: MyBankDetails | null; // null until the affiliate saves them
@@ -94,7 +95,7 @@ export async function getMySettings(): Promise<MySettings | null> {
     supabase
       .from("affiliates")
       .select(
-        "id, name, email, phone, country, country_code, display_currency, profile_locked_at, region, commission_override_percent, affiliate_bank_details ( account_holder_name, bank_name, bank_country, account_number_or_iban, swift_bic, routing_code, payout_currency )",
+        "id, name, email, phone, country, country_code, display_currency, profile_locked_at, region, avatar_path, commission_override_percent, affiliate_bank_details ( account_holder_name, bank_name, bank_country, account_number_or_iban, swift_bic, routing_code, payout_currency )",
       )
       .eq("profile_id", user.id)
       .neq("status", "deleted")
@@ -116,6 +117,16 @@ export async function getMySettings(): Promise<MySettings | null> {
 
   const commission = resolveCommission(0, data.commission_override_percent);
 
+  // The bucket is private: make a 1-hour signed link. A failure just
+  // means "no photo", it never breaks the page.
+  let avatarUrl: string | null = null;
+  if (data.avatar_path) {
+    const { data: signed } = await supabase.storage
+      .from("affiliate-avatars")
+      .createSignedUrl(data.avatar_path as string, 60 * 60);
+    avatarUrl = signed?.signedUrl ?? null;
+  }
+
   return {
     affiliateId: data.id,
     name: data.name ?? null,
@@ -126,6 +137,7 @@ export async function getMySettings(): Promise<MySettings | null> {
     displayCurrency: data.display_currency ?? null,
     profileLocked: !!data.profile_locked_at,
     region: data.region,
+    avatarUrl,
     commissionPercent: commission.percent,
     commissionTier: commission.tier,
     bank: bank

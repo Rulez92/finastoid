@@ -131,7 +131,14 @@ export function BankDetailsForm({
       className="aff-card aff-antd-card"
       bordered={false}
      
-      title="Bank details"
+      title={
+        <div className="leading-tight">
+          <div>Bank details</div>
+          <div className="font-sans text-[11px] font-semibold uppercase tracking-[0.16em] text-aff-gold-600">
+            Finasto™ pays only to your own account
+          </div>
+        </div>
+      }
       extra={
         <span className="text-[13px] text-aff-muted">
           Where Finasto pays your commissions
@@ -181,7 +188,7 @@ export function BankDetailsForm({
                 { max: 120, message: "Keep it under 120 characters" },
               ]}
             >
-              <Input placeholder="Name as it appears on the account" />
+              <Input placeholder="Your own name, as it appears on the account" />
             </Form.Item>
           </Col>
           <Col xs={24} md={12}>
@@ -303,7 +310,9 @@ export function BankDetailsForm({
         </Row>
 
         <p className="mb-4 text-[13px] leading-relaxed text-aff-muted">
-          Your bank details are visible only to you and the Finasto admin team.
+          Finasto™ pays commissions only to a bank account held in your own
+          name, so the account holder name must match your profile. Your bank
+          details are visible only to you and the Finasto admin team.
         </p>
 
         <div className="flex justify-end">

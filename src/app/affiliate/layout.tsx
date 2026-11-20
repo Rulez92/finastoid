@@ -3,6 +3,7 @@ import { requireRole } from "@/lib/auth/server";
 import { createClient } from "@/lib/supabase/server";
 import { signOutAction } from "@/lib/auth/actions";
 import { AffiliateShell } from "@/components/affiliate/layout/affiliate-shell";
+import { getMyUnreadPartnerAnnouncementCount } from "@/lib/partner/announcement-queries";
 
 export const metadata: Metadata = {
   title: "Brand Promoter — Finasto",
@@ -24,7 +25,7 @@ export default async function AffiliateLayout({
   const supabase = await createClient();
   const { data: affiliate } = await supabase
     .from("affiliates")
-    .select("status, profile_locked_at")
+  .select("status, name, profile_locked_at, avatar_path")
     .eq("profile_id", user.id)
     .maybeSingle();
 
@@ -52,11 +53,25 @@ export default async function AffiliateLayout({
     );
   }
 
+   const unreadAnnouncements =
+    await getMyUnreadPartnerAnnouncementCount("affiliate");
+
+  // Private bucket: 1-hour signed link. A failure just means "no photo".
+  let avatarUrl: string | null = null;
+  if (affiliate.avatar_path) {
+    const { data: signed } = await supabase.storage
+      .from("affiliate-avatars")
+      .createSignedUrl(affiliate.avatar_path as string, 60 * 60);
+    avatarUrl = signed?.signedUrl ?? null;
+  }
+
   return (
     <AffiliateShell
-      name={name}
+      name={(affiliate.name as string | null) ?? name}
       email={user.email ?? ""}
       profileLocked={!!affiliate.profile_locked_at}
+      unreadAnnouncements={unreadAnnouncements}
+      avatarUrl={avatarUrl}
     >
       {children}
     </AffiliateShell>

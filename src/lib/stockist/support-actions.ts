@@ -41,11 +41,11 @@ export async function submitSupportRequest(
     return { ok: false, fieldErrors, values };
   }
 
-  const apiKey = process.env.RESEND_API_KEY;
+  const apiKey = process.env.RESEND_KEY;
   const from = process.env.SUPPORT_FROM_EMAIL;
   const to = process.env.SUPPORT_TO_EMAIL;
   if (!apiKey || !from || !to) {
-    console.error("Support email is not configured (RESEND_API_KEY, SUPPORT_*).");
+    console.error("Support email is not configured (RESEND_KEY, SUPPORT_*).");
     return {
       ok: false,
       error: "Email is not available right now. Please try WhatsApp.",
