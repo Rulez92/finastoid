@@ -234,7 +234,7 @@ export default async function AffiliateSupportPage() {
                 <Mail className="h-[18px] w-[18px]" strokeWidth={1.8} aria-hidden="true" />
               </IconBadge>
               <div className="min-w-0">
-                <h2 className="font-display text-[18px] leading-tight text-aff-green-900">
+                <h2 className="font-display text-[20px] leading-tight text-aff-green-900">
                   {T.composer.title}
                 </h2>
                 <p className="mt-0.5 font-sans text-[13px] leading-relaxed text-aff-muted">
@@ -248,15 +248,15 @@ export default async function AffiliateSupportPage() {
         </Reveal>
 
         {/* Sidebar */}
-        <aside className="flex flex-col gap-4 sm:gap-6">
+        <aside className="flex flex-col gap-4 sm:gap-6 ">
           {/* Your details */}
           <Reveal>
-            <section className="aff-card p-5 sm:p-6">
+            <section className="aff bg-gradient-to-br from-aff-green-950 via-aff-green-900 to-aff-green-800  p-5 sm:p-6">
               <div className="flex items-center gap-3">
                 <IconBadge>
-                  <User className="h-[18px] w-[18px]" strokeWidth={1.8} aria-hidden="true" />
+                  <User className="h-[18px] w-[18px] text-cream" strokeWidth={1.8} aria-hidden="true" />
                 </IconBadge>
-                <h2 className="font-display text-[16px] leading-tight text-aff-green-900">
+                <h2 className="font-display text-[18px] leading-tight text-cream">
                   {T.details.title}
                 </h2>
               </div>
@@ -264,19 +264,19 @@ export default async function AffiliateSupportPage() {
               <dl className="mt-4 flex flex-col divide-y divide-aff-border font-sans text-[13px]">
                 <div className="flex items-center justify-between gap-3 py-2.5 first:pt-0">
                   <dt className="text-aff-muted">{T.details.name}</dt>
-                  <dd className="min-w-0 break-words text-end font-medium text-aff-green-900">
+                  <dd className="min-w-0 break-words text-end font-medium text-cream">
                     <bdi>{affiliate?.name ?? T.details.none}</bdi>
                   </dd>
                 </div>
                 <div className="flex items-center justify-between gap-3 py-2.5">
                   <dt className="text-aff-muted">{T.details.code}</dt>
-                  <dd className="min-w-0 break-words text-end font-medium text-aff-green-900">
+                  <dd className="min-w-0 break-words text-end font-medium text-cream">
                     <bdi>{affiliate?.referral_code ?? T.details.none}</bdi>
                   </dd>
                 </div>
                 <div className="flex items-center justify-between gap-3 py-2.5 last:pb-0">
                   <dt className="text-aff-muted">{T.details.email}</dt>
-                  <dd className="min-w-0 break-all text-end font-medium text-aff-green-900">
+                  <dd className="min-w-0 break-all text-end font-medium text-cream">
                     <bdi>{email || T.details.none}</bdi>
                   </dd>
                 </div>
@@ -286,12 +286,12 @@ export default async function AffiliateSupportPage() {
 
           {/* Response time */}
           <Reveal>
-            <section className="aff-card p-5 sm:p-6">
+            <section className="aff bg-gradient-to-br from-aff-green-950 via-aff-green-900 to-aff-green-800 p-5 sm:p-6">
               <div className="flex items-center gap-3">
                 <IconBadge>
-                  <Clock className="h-[18px] w-[18px]" strokeWidth={1.8} aria-hidden="true" />
+                  <Clock className="h-[18px] w-[18px] text-cream" strokeWidth={1.8} aria-hidden="true" />
                 </IconBadge>
-                <h2 className="font-display text-[16px] leading-tight text-aff-green-900">
+                <h2 className="font-display text-[16px] leading-tight text-cream">
                   {T.response.title}
                 </h2>
               </div>
@@ -303,12 +303,12 @@ export default async function AffiliateSupportPage() {
 
           {/* Tips */}
           <Reveal>
-            <section className="aff-card p-5 sm:p-6">
+            <section className="aff bg-gradient-to-br from-aff-green-950 via-aff-green-900 to-aff-green-800 p-5 sm:p-6">
               <div className="flex items-center gap-3">
                 <IconBadge>
-                  <Lightbulb className="h-[18px] w-[18px]" strokeWidth={1.8} aria-hidden="true" />
+                  <Lightbulb className="h-[18px] w-[18px] text-cream" strokeWidth={1.8} aria-hidden="true" />
                 </IconBadge>
-                <h2 className="font-display text-[16px] leading-tight text-aff-green-900">
+                <h2 className="font-display text-[16px] leading-tight text-cream">
                   {T.tips.title}
                 </h2>
               </div>

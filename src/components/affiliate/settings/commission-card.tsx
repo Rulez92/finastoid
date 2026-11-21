@@ -215,7 +215,7 @@ export function CommissionCard({
                         />
                         <span
                           className={
-                            "mt-1.5 max-w-full truncate font-sans text-[11px] sm:text-[12px] " +
+                            "mt-1.5 max-w-full truncate font-sans  " +
                             (isCurrent
                               ? "font-semibold text-aff-gold-300"
                               : "text-aff-cream-50/65")

@@ -509,15 +509,22 @@ if (!data || !settings) {
 
               {/* Premium tier badge (right side, sm and up) */}
               <div className="flex shrink-0 items-center justify-center gap-4">
-                <span
+                {/* <span
                   aria-hidden="true"
                   className="hidden h-12 w-px bg-gradient-to-b from-transparent via-aff-gold-400/50 to-transparent md:block"
-                />
+                /> */}
+                
                 <div className="relative flex h-20 w-20 items-center justify-center rounded-full border border-aff-gold-400/50 bg-aff-green-950/60 shadow-[0_0_28px_-4px_rgba(241,204,156,0.45)] md:h-28 md:w-28">
-                  <span
+                  {/* <span
                     aria-hidden="true"
                     className="absolute inset-[5px] rounded-full border border-dashed border-aff-gold-400/30"
-                  />
+                  /> */}
+                  <span
+  aria-hidden="true"
+  // className="absolute inset-[5px] animate-[spin_12s_linear_infinite] rounded-full border border-dashed border-aff-gold-400/40 motion-reduce:animate-none"
+  className="absolute inset-[5px] animate-[spin_12s_linear_infinite] rounded-full border border-dashed border-aff-gold-400/40 "
+
+/>
                   <div className="text-center">
                     <p className="font-display text-[26px] leading-none tabular-nums text-aff-gold-300 md:text-[30px]">
                                            {settings.commissionPercent}%

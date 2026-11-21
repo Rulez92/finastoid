@@ -350,7 +350,7 @@ export function SupportEmailForm({ replyTo }: { replyTo: string }) {
             type="button"
             disabled={isPending}
             onClick={() => pickTopic(chip.subject)}
-            className="touch-manipulation rounded-full border border-aff-border bg-aff-ivory/60 px-3.5 py-1.5 font-sans text-[12px] font-medium text-aff-green-900 transition-colors duration-200 hover:border-aff-gold-500 hover:bg-aff-gold-400/15 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-aff-gold-400/30 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transition-none"
+            className=" cursor-pointer touch-manipulation rounded-full border border-aff-border bg-green px-3.5 py-1.5 font-sans text-[12px] font-medium text-cream transition-colors duration-200 hover:border-aff-gold-500 hover:bg-green/15 hover:text-green focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-aff-gold-400/30 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transition-none"
           >
             {chip.label}
           </button>
@@ -455,7 +455,7 @@ export function SupportEmailForm({ replyTo }: { replyTo: string }) {
         <button
           type="submit"
           disabled={isPending}
-          className="inline-flex h-11 w-full touch-manipulation items-center justify-center gap-2 rounded-full bg-gradient-to-r from-aff-gold-600 via-aff-gold-300 to-aff-gold-500 px-6 font-sans text-[14px] font-semibold text-aff-green-950 shadow-[0_10px_26px_-14px_rgba(172,131,78,0.8)] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-aff-gold-400/40 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transition-none sm:w-auto sm:min-w-[170px] [@media(hover:hover)]:hover:brightness-105"
+          className=" cursor-pointer inline-flex h-11 w-full touch-manipulation items-center justify-center gap-2 rounded-full bg-gradient-to-r from-aff-gold-600 via-aff-gold-300 to-aff-gold-500 px-6 font-sans text-[14px] font-semibold text-aff-green-950 shadow-[0_10px_26px_-14px_rgba(172,131,78,0.8)] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-aff-gold-400/40 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transition-none sm:w-auto sm:min-w-[170px] [@media(hover:hover)]:hover:brightness-105"
         >
           {isPending ? (
             <Loader2
