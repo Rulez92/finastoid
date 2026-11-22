@@ -25,7 +25,9 @@ import type {
   AffiliateDetail,
   AffiliateStatus,
 } from "@/lib/admin/affiliate-queries";
+// import { AffiliateStatusBadge } from "@/components/admin/affiliates/affiliate-status-badge";
 import { AffiliateStatusBadge } from "@/components/admin/affiliates/affiliate-status-badge";
+import { MAX_DISCOUNT_PERCENT } from "@/lib/checkout/discount";
 
 // Shared create/edit form (admin/affiliates/new and admin/affiliates/[id]).
 // Same two-column layout as stockist-form.tsx.
@@ -46,7 +48,7 @@ type FormValues = {
   stockistId?: string; // undefined = unassigned (converted to null on save)
   status: AffiliateStatus;
   notes: string;
- 
+   discountPercent: number;
 };
 
 const FORM_FIELDS: (keyof FormValues)[] = [
@@ -55,7 +57,7 @@ const FORM_FIELDS: (keyof FormValues)[] = [
   "stockistId",
   "status",
   "notes",
- 
+  "discountPercent",
 ];
 
 const trimOrNull = (s?: string) => (s && s.trim() !== "" ? s.trim() : null);
@@ -96,7 +98,7 @@ export function AffiliateForm({
     stockistId: affiliate?.stockistId ?? undefined,
     status: affiliate?.status ?? "active",
     notes: affiliate?.notes ?? "",
-   
+   discountPercent: affiliate?.discountPercent ?? 0,
   };
 
   function handleFinish(values: FormValues) {
@@ -108,6 +110,7 @@ export function AffiliateForm({
       stockistId: values.stockistId ?? null, // cleared Select => unassigned
       notes: trimOrNull(values.notes),
       status: values.status,
+       discountPercent: values.discountPercent ?? 0,
       
     };
 
@@ -224,6 +227,24 @@ export function AffiliateForm({
                   </div>
                 </div>
               )}
+
+                           <Form.Item
+                label="Customer discount %"
+                name="discountPercent"
+                rules={[
+                  { required: true, message: "Enter a discount (0 for none)" },
+                ]}
+                extra={`Percent off the product price for customers who buy through this affiliate's link. 0 = no discount. Maximum ${MAX_DISCOUNT_PERCENT}. Taken from company margin.`}
+              >
+                <InputNumber
+                  min={0}
+                  max={MAX_DISCOUNT_PERCENT}
+                  step={0.5}
+                  precision={2}
+                  suffix="%"
+                  className="!w-full"
+                />
+              </Form.Item>
 
               <Form.Item
                 label="Stockist"

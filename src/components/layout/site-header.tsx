@@ -36,7 +36,8 @@ export function SiteHeader() {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [isMarketOpen, setIsMarketOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
-  const { market: selectedMarket, setMarket } = useMarket();
+  // const { market: selectedMarket, setMarket } = useMarket();
+    const { market: selectedMarket, setMarket, canChooseCurrency } = useMarket();
   const { count, openCart } = useCart();
   const marketRef = useRef<HTMLDivElement>(null);
 const router = useRouter();
@@ -188,7 +189,12 @@ const router = useRouter();
           {/* Utility cluster */}
           <div className="flex items-center gap-1 sm:gap-2">
            
-            <div ref={marketRef} className="relative block">
+            {/* <div ref={marketRef} className="relative block">
+             */}
+                         <div
+              ref={marketRef}
+              className={cn("relative", canChooseCurrency ? "block" : "hidden")}
+            >
               <button
                 type="button"
                 onClick={() => setIsMarketOpen((prev) => !prev)}

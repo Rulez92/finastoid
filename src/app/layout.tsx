@@ -10,7 +10,9 @@ import { MarketProvider } from "@/components/providers/market-provider";
 import { CartProvider } from "@/components/providers/cart-provider";
 import { CartDrawer } from "@/components/cart/cart-drawer";
 import { ScrollToTop } from "@/components/layout/scroll-to-top";
+// import { getStorefrontProducts } from "@/lib/storefront-queries";
 import { getStorefrontProducts } from "@/lib/storefront-queries";
+import { canChooseCurrency } from "@/lib/geo-server";
 import { AuthLoadingProvider } from "@/components/AuthLoadingProvider";
 import { ProductsProvider } from "@/components/providers/products-provider";
 import NextTopLoader from "nextjs-toploader";
@@ -49,7 +51,11 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const products = await getStorefrontProducts();
+  // const products = await getStorefrontProducts();
+    const [products, canChoose] = await Promise.all([
+    getStorefrontProducts(),
+    canChooseCurrency(),
+  ]);
   return ( 
     <html
       lang="en"
@@ -69,7 +75,8 @@ export default async function RootLayout({
               />
               <IntroGate />
               <AuthLoadingProvider>
-                <MarketProvider>
+                {/* <MarketProvider> */}
+                                <MarketProvider canChooseCurrency={canChoose}>
                   <ProductsProvider products={products}>
                     <CartProvider>
                       {children}

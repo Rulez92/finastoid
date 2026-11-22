@@ -19,6 +19,7 @@ import {
   type RateMap,
 } from "@/lib/currency";
 import { readCurrencyCookie } from "@/lib/currency-server";
+import { canChooseCurrency } from "@/lib/geo-server";
 
 // "Table does not exist yet" is not an error while the backend step is
 // still pending.
@@ -70,6 +71,26 @@ export async function getCurrencyContext(): Promise<{
   currency: string;
 }> {
   const rates = await getRates();
+//   const currency = resolveCurrency(await readCurrencyCookie(), rates);
+//   return { rates, currency };
+// }
+  const currency = resolveCurrency(await readCurrencyCookie(), rates);
+  return { rates, currency };
+}
+
+/**
+ * Storefront + checkout version. Outside Indonesia the currency cookie is
+ * ignored and the currency is always USD, so a leftover or tampered IDR
+ * cookie can never change what a customer is charged.
+ */
+export async function getStorefrontCurrencyContext(): Promise<{
+  rates: RateMap;
+  currency: string;
+}> {
+  const rates = await getRates();
+  if (!(await canChooseCurrency())) {
+    return { rates, currency: BASE_CURRENCY };
+  }
   const currency = resolveCurrency(await readCurrencyCookie(), rates);
   return { rates, currency };
 }

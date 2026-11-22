@@ -73,8 +73,11 @@ export type AffiliateListItem = {
   hasAccount: boolean; // true once profile_id is set (invite succeeded)
   profileComplete: boolean; // phone + country filled in by the affiliate
   commissionPercent: number;
-   commissionTier: string;
+    commissionTier: string;
+  discountPercent: number; // customer discount on this affiliate's link
   bankComplete: boolean; // affiliate has saved bank details
+  //  commissionTier: string;
+  // bankComplete: boolean; // affiliate has saved bank details
   updatedAt: string;
 };
 
@@ -99,8 +102,11 @@ export type AffiliateDetail = {
   hasAccount: boolean;
   profileComplete: boolean;
   commissionPercent: number; // effective rate (tier or override)
-  commissionTier: string;
+    commissionTier: string;
   commissionOverridePercent: number | null;
+  discountPercent: number; // customer discount on this affiliate's link
+  // commissionTier: string;
+  // commissionOverridePercent: number | null;
   bankDetails: AffiliateBankDetails | null;
   bankComplete: boolean;
   // Safe zeros until the Orders section exists.
@@ -160,7 +166,10 @@ export async function listAffiliates(params: {
   let query = supabase
     .from("affiliates")
     .select(
-      "id, name, email, phone, country, status, stockist_id, profile_id, commission_override_percent, updated_at, stockists ( name ), affiliate_bank_details ( affiliate_id )",
+      "id, name, email, phone, country, status, stockist_id, profile_id, commission_override_percent, referral_discount_percent, updated_at, stockists ( name ), affiliate_bank_details ( affiliate_id )",
+
+      // 
+      // "id, name, email, phone, country, status, stockist_id, profile_id, commission_override_percent, updated_at, stockists ( name ), affiliate_bank_details ( affiliate_id )",
       { count: "exact" },
     )
     .neq("status", "deleted") // soft-deleted rows never appear in the list
@@ -200,7 +209,9 @@ export async function listAffiliates(params: {
     profileComplete: isProfileComplete(row),
     commissionPercent: resolveCommission(0, row.commission_override_percent)
       .percent,
-    commissionTier: resolveCommission(0, row.commission_override_percent).tier,
+    // commissionTier: resolveCommission(0, row.commission_override_percent).tier,
+        commissionTier: resolveCommission(0, row.commission_override_percent).tier,
+    discountPercent: num(row.referral_discount_percent),
     bankComplete: embeddedOne(row.affiliate_bank_details) !== null,
     updatedAt: row.updated_at,
   }));
@@ -221,7 +232,9 @@ export async function getAffiliateById(
   const { data, error } = await supabase
     .from("affiliates")
     .select(
-      "id, name, email, phone, country, region, status, stockist_id, profile_id, commission_override_percent, notes, created_at, updated_at, stockists ( name ), affiliate_bank_details ( account_holder_name, bank_name, bank_country, account_number_or_iban, swift_bic, routing_code, payout_currency )",
+      "id, name, email, phone, country, region, status, stockist_id, profile_id, commission_override_percent, referral_discount_percent, notes, created_at, updated_at, stockists ( name ), affiliate_bank_details ( account_holder_name, bank_name, bank_country, account_number_or_iban, swift_bic, routing_code, payout_currency )",
+      
+      // "id, name, email, phone, country, region, status, stockist_id, profile_id, commission_override_percent, notes, created_at, updated_at, stockists ( name ), affiliate_bank_details ( account_holder_name, bank_name, bank_country, account_number_or_iban, swift_bic, routing_code, payout_currency )",
     )
     .eq("id", id)
     .neq("status", "deleted")
@@ -258,7 +271,9 @@ export async function getAffiliateById(
     hasAccount: data.profile_id != null,
     profileComplete: isProfileComplete(data),
     commissionPercent: commission.percent,
-    commissionTier: commission.tier,
+    // commissionTier: commission.tier,
+        commissionTier: commission.tier,
+    discountPercent: num(data.referral_discount_percent),
     commissionOverridePercent:
       data.commission_override_percent == null
         ? null

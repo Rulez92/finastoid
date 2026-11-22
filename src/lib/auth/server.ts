@@ -82,7 +82,7 @@ export const getAuthContext = cache(async (): Promise<AuthContext | null> => {
 
 export async function requireRole(required: Role): Promise<AuthContext> {
   const ctx = await getAuthContext();
-  if (!ctx) redirect("/login");
+  if (!ctx) redirect("/");
   if (ctx.role !== required) redirect(roleHome[ctx.role]);
   return ctx;
 }

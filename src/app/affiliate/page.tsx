@@ -403,6 +403,7 @@ import { parseRange } from "@/lib/affiliate/dashboard-ranges";
 import { Reveal } from "@/components/affiliate/dashboard/reveal";
 import { getMySettings } from "@/lib/affiliate/settings-queries";
 import { CommissionCard } from "@/components/affiliate/settings/commission-card";
+import { Tag } from "lucide-react";
 // import { GrowthStrip } from "@/components/affiliate/dashboard/growth-strip";
 
 // Always read fresh numbers for the signed-in affiliate.
@@ -508,7 +509,30 @@ if (!data || !settings) {
               </p> */}
 
               {/* Premium tier badge (right side, sm and up) */}
-              <div className="flex shrink-0 items-center justify-center gap-4">
+           {/* Premium tier badge + customer discount (right side) */}
+<div className="flex shrink-0 items-center justify-center gap-8 md:gap-25">
+ 
+
+  {/* Discount chip, to the right of the tier circle */}
+  <div className="w-[116px] rounded-xl border border-aff-gold-400/40 bg-aff-green-950/60 px-3 py-2.5 text-center md:w-[150px]">
+    <p className="flex items-center justify-center gap-1.5 font-sans text-[10px] uppercase tracking-[0.14em] text-aff-cream-50/65">
+      <Tag
+        className="h-3 w-3 shrink-0 text-aff-gold-300"
+        strokeWidth={1.8}
+        aria-hidden="true"
+      />
+      Discount
+    </p>
+    <p className="mt-1 font-display text-[22px] leading-none tabular-nums text-aff-gold-300">
+      {settings.discountPercent > 0 ? `${settings.discountPercent}%` : "None"}
+    </p>
+    <p className="mt-1 font-sans text-[10px] text-aff-cream-50/55">
+      {settings.discountPercent > 0
+        ? "off for buyers on your link"
+        : "no discount on your link"}
+    </p>
+  </div>
+
                 {/* <span
                   aria-hidden="true"
                   className="hidden h-12 w-px bg-gradient-to-b from-transparent via-aff-gold-400/50 to-transparent md:block"

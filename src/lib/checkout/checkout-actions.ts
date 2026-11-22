@@ -14,17 +14,23 @@ import { randomUUID } from "node:crypto";
 import { isValidPhoneNumber } from "libphonenumber-js";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
-import { getCurrencyContext } from "@/lib/rates";
-import { convert, toBase } from "@/lib/currency";
+// import { getCurrencyContext } from "@/lib/rates";
+import { getStorefrontCurrencyContext } from "@/lib/rates";
+// import { convert, toBase } from "@/lib/currency";
+import { applyDiscount } from "@/lib/checkout/discount";
 import { readReferralCode } from "@/lib/referral/referral-cookie";
 import { resolveReferral } from "@/lib/referral/referral-queries";
 import { generateTrackingCode } from "@/lib/checkout/tracking-code";
+// import {
+//   pickCheapestActiveVariant,
+//   effectivePrice,
+//   type RawVariant,
+// } from "@/lib/products/effective-variant";
 import {
   pickCheapestActiveVariant,
-  effectivePrice,
+  priceForCurrency,
   type RawVariant,
-} from "@/lib/products/effective-variant";
-
+} from "@/lib/variant-pricing";
 /* ------------------------------------------------------------------ */
 /* Validation                                                          */
 /* ------------------------------------------------------------------ */
@@ -93,6 +99,216 @@ export type CheckoutResult =
 /* Create order                                                        */
 /* ------------------------------------------------------------------ */
 
+// export async function createOrder(
+//   input: CheckoutInput,
+// ): Promise<CheckoutResult> {
+//   const parsed = checkoutInputSchema.safeParse(input);
+//   if (!parsed.success) {
+//     return {
+//       success: false,
+//       error: "Please check your details and try again.",
+//       fieldErrors: parsed.error.flatten().fieldErrors as Record<
+//         string,
+//         string[]
+//       >,
+//     };
+//   }
+//   const data = parsed.data;
+
+//   const supabase = await createClient();
+//   // const { rates, currency } = await getCurrencyContext();
+//     const { rates, currency } = await getStorefrontCurrencyContext();
+
+//   // 1) Re-fetch products + variants server-side — price never trusted
+//   //    from the client. Same cheapest-active-variant logic the
+//   //    storefront uses to display a price in the first place.
+//   const productIds = data.lines.map((l) => l.productId);
+//   const { data: products, error: productsError } = await supabase
+//     .from("products")
+//     .select(
+//       "id, name, status, currency_code, product_variants ( id, name, sku, price, sale_price, sale_starts_at, sale_ends_at, stock, status )",
+//     )
+//     .in("id", productIds);
+
+//   if (productsError) {
+//     return {
+//       success: false,
+//       error: `Could not verify your cart: ${productsError.message}`,
+//     };
+//   }
+
+//   const productMap = new Map((products ?? []).map((p) => [p.id, p]));
+//   const resolvedLines: {
+//     variantId: string;
+//     productId: string;
+//     productName: string;
+//     variantName: string;
+//     quantity: number;
+//     unitPriceUsd: number;
+//     unitPriceOriginal: number;
+//     priceCurrency: string;
+//     rateUsed: number;
+//   }[] = [];
+
+//   for (const line of data.lines) {
+//     const product = productMap.get(line.productId);
+//     if (!product || product.status !== "active") {
+//       return {
+//         success: false,
+//         error: "One of the items in your cart is no longer available.",
+//       };
+//     }
+
+//     const variant = pickCheapestActiveVariant(
+//       (product.product_variants ?? []) as RawVariant[],
+//     );
+//     if (!variant) {
+//       return {
+//         success: false,
+//         error: `"${product.name}" is currently unavailable. Please remove it and try again.`,
+//       };
+//     }
+//     if (variant.stock < line.quantity) {
+//       return {
+//         success: false,
+//         error: `Only ${variant.stock} left of "${product.name}". Please adjust the quantity.`,
+//       };
+//     }
+
+//     // Prices are stored in the product's own currency. Convert to USD (the
+//     // reference value) using live rates. No usable rate means no order:
+//     // we never guess a price.
+//     const priceCurrency: string = product.currency_code ?? "USD";
+//     const unitPriceOriginal = effectivePrice(variant);
+//     const unitPriceUsd = toBase(unitPriceOriginal, priceCurrency, rates);
+//     if (unitPriceUsd === null) {
+//       return {
+//         success: false,
+//         error: `The price for "${product.name}" is temporarily unavailable. Please try again shortly.`,
+//       };
+//     }
+
+//     resolvedLines.push({
+//       variantId: variant.id,
+//       productId: product.id,
+//       productName: product.name,
+//       variantName: variant.name,
+//       quantity: line.quantity,
+//       unitPriceUsd,
+//       unitPriceOriginal,
+//       priceCurrency,
+//       rateUsed:
+//         priceCurrency === "USD" ? 1 : (rates[priceCurrency]?.rateToBase ?? 1),
+//     });
+//   }
+
+//   // 2) Totals: total_base is USD (the stored base currency), total_amount
+//   //    + order_currency are what the customer actually sees/is charged
+//   //    in their selected currency. exchange_rate_at_order records the
+//   //    rate used, for an honest historical record even if rates change
+//   //    later.
+//   const totalBaseUsd = resolvedLines.reduce(
+//     (sum, l) => sum + l.unitPriceUsd * l.quantity,
+//     0,
+//   );
+//   const converted = convert(totalBaseUsd, currency, rates);
+//   if (converted.fallback) {
+//     // The customer's currency rate is stale. Charging in USD while they saw
+//     // another currency would be a surprise, so ask them to retry.
+//     return {
+//       success: false,
+//       error:
+//         "Prices in your currency are being updated. Please refresh the page and try again.",
+//     };
+//   }
+//   // Matches lib/currency.ts's rateToBase direction (USD per 1 unit of
+//   // the currency); USD itself always has an implicit rate of 1.
+//   const exchangeRate =
+//     converted.currency === "USD"
+//       ? 1
+//       : (rates[converted.currency]?.rateToBase ?? 1);
+
+//   // 3) Referral attribution — snapshotted now, never re-derived later.
+//   //    affiliateProfileId/stockistProfileId are profiles(id), matching
+//   //    the real foreign keys on orders.affiliate_id/stockist_id.
+//   const referralCode = await readReferralCode();
+//   const referral = referralCode ? await resolveReferral(referralCode) : null;
+
+//   const sourceType: "direct" | "affiliate" | "stockist" =
+//     referral?.affiliateProfileId
+//       ? referral.stockistProfileId
+//         ? "stockist"
+//         : "affiliate"
+//       : "direct";
+
+//   // 4) Tracking code = order_number. Generated and collision-checked
+//   //    before insert.
+//   const trackingCode = await generateTrackingCode();
+
+//   // 5) Write the order. No stock decrement here — that happens once
+//   //    payment is confirmed, so an abandoned pending order never locks
+//   //    inventory away from other customers.
+//   // The id is created here instead of read back from the insert. A guest
+//   // has no permission to read orders, so ".select()" after the insert is
+//   // what caused "new row violates row-level security policy".
+//   const orderId = randomUUID();
+
+//   const { error: orderError } = await supabase.from("orders").insert({
+//     id: orderId,
+//     order_number: trackingCode,
+//     customer_name: data.customerName,
+//     customer_email: data.customerEmail,
+//     customer_phone: data.customerPhone,
+//     country: data.shippingCountry,
+//     shipping_line1: data.shippingLine1,
+//     shipping_line2: data.shippingLine2 || null,
+//     shipping_city: data.shippingCity,
+//     shipping_state: data.shippingState || null,
+//     shipping_postal_code: data.shippingPostalCode || null,
+//     status: "pending",
+//     payment_status: "pending",
+//     source_type: sourceType,
+//     affiliate_id: referral?.affiliateProfileId ?? null,
+//     stockist_id: referral?.stockistProfileId ?? null,
+//     affiliate_commission_percent: referral?.commissionPercent ?? null,
+//     stockist_profit_percent: referral?.stockistProfitPercent ?? null,
+//     order_currency: converted.currency,
+//     total_amount: converted.amount,
+//     exchange_rate_at_order: exchangeRate,
+//   });
+
+//   if (orderError) {
+//     return {
+//       success: false,
+//       error: `Could not create your order: ${orderError?.message}`,
+//     };
+//   }
+
+//   const { error: itemsError } = await supabase.from("order_items").insert(
+//     resolvedLines.map((l) => ({
+//       order_id: orderId,
+//       product_id: l.productId,
+//       product_name: l.productName,
+//       variant_id: l.variantId,
+//       variant_name: l.variantName,
+//       quantity: l.quantity,
+//       unit_price: l.unitPriceUsd,
+//       original_unit_price: l.unitPriceOriginal,
+//       price_currency: l.priceCurrency,
+//       rate_used: l.rateUsed,
+//       line_total: l.unitPriceUsd * l.quantity,
+//     })),
+//   );
+
+//   if (itemsError) {
+//     return {
+//       success: false,
+//       error: `Order could not be completed: ${itemsError.message}`,
+//     };
+//   }
+
+//   return { success: true, orderId, trackingCode };
+// }
 export async function createOrder(
   input: CheckoutInput,
 ): Promise<CheckoutResult> {
@@ -110,16 +326,19 @@ export async function createOrder(
   const data = parsed.data;
 
   const supabase = await createClient();
-  const { rates, currency } = await getCurrencyContext();
+  const { currency } = await getStorefrontCurrencyContext();
 
-  // 1) Re-fetch products + variants server-side — price never trusted
-  //    from the client. Same cheapest-active-variant logic the
-  //    storefront uses to display a price in the first place.
+  // Only USD and IDR have fixed admin prices. Anything else is charged in
+  // USD. No exchange rate is used anywhere in this function.
+  const orderCurrency: "USD" | "IDR" = currency === "IDR" ? "IDR" : "USD";
+
+  // 1) Re-fetch products + variants server-side. Price is never trusted
+  //    from the client. Both fixed prices (USD and IDR) are selected.
   const productIds = data.lines.map((l) => l.productId);
   const { data: products, error: productsError } = await supabase
     .from("products")
     .select(
-      "id, name, status, currency_code, product_variants ( id, name, sku, price, sale_price, sale_starts_at, sale_ends_at, stock, status )",
+      "id, name, status, product_variants ( id, name, sku, price, price_idr, sale_price, sale_price_idr, sale_starts_at, sale_ends_at, stock, status )",
     )
     .in("id", productIds);
 
@@ -137,10 +356,9 @@ export async function createOrder(
     productName: string;
     variantName: string;
     quantity: number;
-    unitPriceUsd: number;
-    unitPriceOriginal: number;
-    priceCurrency: string;
-    rateUsed: number;
+    unitPriceUsd: number; // fixed USD price (reference value)
+    unitPriceOrder: number; // fixed price in the customer's currency
+    rateUsed: number; // implied USD per 1 unit of the order currency
   }[] = [];
 
   for (const line of data.lines) {
@@ -168,16 +386,14 @@ export async function createOrder(
       };
     }
 
-    // Prices are stored in the product's own currency. Convert to USD (the
-    // reference value) using live rates. No usable rate means no order:
-    // we never guess a price.
-    const priceCurrency: string = product.currency_code ?? "USD";
-    const unitPriceOriginal = effectivePrice(variant);
-    const unitPriceUsd = toBase(unitPriceOriginal, priceCurrency, rates);
-    if (unitPriceUsd === null) {
+    // The same helper the storefront uses, so shown price = charged price.
+    // A missing fixed price means no order: we never invent one.
+    const unitPriceOrder = priceForCurrency(variant, orderCurrency);
+    const unitPriceUsd = priceForCurrency(variant, "USD");
+    if (unitPriceOrder === null || unitPriceUsd === null) {
       return {
         success: false,
-        error: `The price for "${product.name}" is temporarily unavailable. Please try again shortly.`,
+        error: `The price for "${product.name}" is not available right now. Please try again shortly.`,
       };
     }
 
@@ -188,42 +404,16 @@ export async function createOrder(
       variantName: variant.name,
       quantity: line.quantity,
       unitPriceUsd,
-      unitPriceOriginal,
-      priceCurrency,
+      unitPriceOrder,
       rateUsed:
-        priceCurrency === "USD" ? 1 : (rates[priceCurrency]?.rateToBase ?? 1),
+        orderCurrency === "USD" || unitPriceOrder === 0
+          ? 1
+          : unitPriceUsd / unitPriceOrder,
     });
   }
 
-  // 2) Totals: total_base is USD (the stored base currency), total_amount
-  //    + order_currency are what the customer actually sees/is charged
-  //    in their selected currency. exchange_rate_at_order records the
-  //    rate used, for an honest historical record even if rates change
-  //    later.
-  const totalBaseUsd = resolvedLines.reduce(
-    (sum, l) => sum + l.unitPriceUsd * l.quantity,
-    0,
-  );
-  const converted = convert(totalBaseUsd, currency, rates);
-  if (converted.fallback) {
-    // The customer's currency rate is stale. Charging in USD while they saw
-    // another currency would be a surprise, so ask them to retry.
-    return {
-      success: false,
-      error:
-        "Prices in your currency are being updated. Please refresh the page and try again.",
-    };
-  }
-  // Matches lib/currency.ts's rateToBase direction (USD per 1 unit of
-  // the currency); USD itself always has an implicit rate of 1.
-  const exchangeRate =
-    converted.currency === "USD"
-      ? 1
-      : (rates[converted.currency]?.rateToBase ?? 1);
-
-  // 3) Referral attribution — snapshotted now, never re-derived later.
-  //    affiliateProfileId/stockistProfileId are profiles(id), matching
-  //    the real foreign keys on orders.affiliate_id/stockist_id.
+  // 2) Referral attribution, resolved BEFORE the totals because the
+  //    discount depends on it. Snapshotted on the order, never re-derived.
   const referralCode = await readReferralCode();
   const referral = referralCode ? await resolveReferral(referralCode) : null;
 
@@ -234,16 +424,36 @@ export async function createOrder(
         : "affiliate"
       : "direct";
 
-  // 4) Tracking code = order_number. Generated and collision-checked
-  //    before insert.
+  // 3) Totals, all in the customer's currency from the fixed prices.
+  //    The discount is a percent of the PRODUCT SUBTOTAL only (no tax,
+  //    no shipping) and is clamped by applyDiscount().
+  const rawSubtotal = resolvedLines.reduce(
+    (sum, l) => sum + l.unitPriceOrder * l.quantity,
+    0,
+  );
+  const subtotalUsd = resolvedLines.reduce(
+    (sum, l) => sum + l.unitPriceUsd * l.quantity,
+    0,
+  );
+  const discount = applyDiscount(
+    rawSubtotal,
+    referral?.discountPercent ?? 0,
+    orderCurrency,
+  );
+
+  // Informational only: the implied USD value of one unit of the order
+  // currency, taken from the two fixed prices. Not a live rate.
+  const exchangeRate =
+    orderCurrency === "USD" || discount.subtotal <= 0
+      ? 1
+      : subtotalUsd / discount.subtotal;
+
+  // 4) Tracking code = order_number, collision-checked before insert.
   const trackingCode = await generateTrackingCode();
 
-  // 5) Write the order. No stock decrement here — that happens once
-  //    payment is confirmed, so an abandoned pending order never locks
-  //    inventory away from other customers.
-  // The id is created here instead of read back from the insert. A guest
-  // has no permission to read orders, so ".select()" after the insert is
-  // what caused "new row violates row-level security policy".
+  // 5) Write the order. No stock decrement here: that happens once
+  //    payment is confirmed. The id is created here (not read back) because
+  //    a guest has no permission to read orders.
   const orderId = randomUUID();
 
   const { error: orderError } = await supabase.from("orders").insert({
@@ -265,15 +475,18 @@ export async function createOrder(
     stockist_id: referral?.stockistProfileId ?? null,
     affiliate_commission_percent: referral?.commissionPercent ?? null,
     stockist_profit_percent: referral?.stockistProfitPercent ?? null,
-    order_currency: converted.currency,
-    total_amount: converted.amount,
+    order_currency: orderCurrency,
+    subtotal_amount: discount.subtotal,
+    referral_discount_percent: referral ? discount.discountPercent : null,
+    discount_amount: discount.discountAmount,
+    total_amount: discount.total,
     exchange_rate_at_order: exchangeRate,
   });
 
   if (orderError) {
     return {
       success: false,
-      error: `Could not create your order: ${orderError?.message}`,
+      error: `Could not create your order: ${orderError.message}`,
     };
   }
 
@@ -286,8 +499,8 @@ export async function createOrder(
       variant_name: l.variantName,
       quantity: l.quantity,
       unit_price: l.unitPriceUsd,
-      original_unit_price: l.unitPriceOriginal,
-      price_currency: l.priceCurrency,
+      original_unit_price: l.unitPriceOrder,
+      price_currency: orderCurrency,
       rate_used: l.rateUsed,
       line_total: l.unitPriceUsd * l.quantity,
     })),

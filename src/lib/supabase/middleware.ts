@@ -33,7 +33,7 @@ export async function updateSession(request: NextRequest) {
 
   if (protectedArea && !user) {
     const url = request.nextUrl.clone();
-    url.pathname = "/login";
+    // url.pathname = "/login";
     url.search = `?next=${encodeURIComponent(path)}`;
     return NextResponse.redirect(url);
   }

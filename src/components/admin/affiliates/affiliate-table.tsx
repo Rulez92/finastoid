@@ -107,10 +107,23 @@ export function AffiliateTable({
         </div>
       ),
     },
+        {
+      title: "Discount",
+      dataIndex: "discountPercent",
+      render: (_, item) => (
+        <span className="font-sans text-[13px] tabular-nums text-espresso">
+          {item.discountPercent > 0 ? `${item.discountPercent}%` : "—"}
+        </span>
+      ),
+    },
     {
       title: "Status",
       dataIndex: "status",
       width: 120,
+    // {
+    //   title: "Status",
+    //   dataIndex: "status",
+    //   width: 120,
       render: (_, item) => <AffiliateStatusBadge status={item.status} />,
     },
     {
@@ -353,6 +366,12 @@ function AffiliateCard({
         <dt className="text-warm-gray">Commission</dt>
         <dd className="text-right tabular-nums text-espresso">
           {item.commissionPercent}% · {item.commissionTier}
+        </dd>
+        {/* <dt className="text-warm-gray">Updated</dt>
+         */}
+                 <dt className="text-warm-gray">Discount</dt>
+        <dd className="text-right tabular-nums text-espresso">
+          {item.discountPercent > 0 ? `${item.discountPercent}%` : "—"}
         </dd>
         <dt className="text-warm-gray">Updated</dt>
         <dd className="text-right text-espresso/80">

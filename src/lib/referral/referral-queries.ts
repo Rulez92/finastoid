@@ -21,7 +21,12 @@ export type ReferralAttribution = {
   commissionPercent: number;
   stockistId: string | null; // null if this affiliate has no active stockist
   stockistProfileId: string | null; // profiles.id, what orders.stockist_id stores
+//   stockistProfitPercent: number | null;
+// };
+
+// type AttributionRow = {
   stockistProfitPercent: number | null;
+  discountPercent: number; // admin-set, 0 = no discount
 };
 
 type AttributionRow = {
@@ -31,8 +36,11 @@ type AttributionRow = {
   commission_percent: number | string | null;
   stockist_id: string | null;
   stockist_profile_id: string | null;
-  stockist_profit_percent: number | string | null;
+    stockist_profit_percent: number | string | null;
+  referral_discount_percent: number | string | null;
 };
+//   stockist_profit_percent: number | string | null;
+// };
 
 // Returns null for: no code, code doesn't match any affiliate, or that
 // affiliate is paused/deleted. In every case the order is simply created
@@ -66,7 +74,11 @@ export async function resolveReferral(
     commissionPercent: Number(row.commission_percent) || 0,
     stockistId: row.stockist_id,
     stockistProfileId: row.stockist_profile_id,
-    stockistProfitPercent:
+  //   stockistProfitPercent:
+  //     row.stockist_id != null ? Number(row.stockist_profit_percent) || 0 : null,
+  // };
+      stockistProfitPercent:
       row.stockist_id != null ? Number(row.stockist_profit_percent) || 0 : null,
+    discountPercent: Number(row.referral_discount_percent) || 0,
   };
 }

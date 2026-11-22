@@ -47,7 +47,62 @@ export function pickCheapestActiveVariant<T extends RawVariant>(
 ): T | null {
   const active = variants.filter((v) => v.status === "active");
   if (active.length === 0) return null;
+//   return active.reduce((a, b) =>
+//     effectivePrice(b, now) < effectivePrice(a, now) ? b : a,
+//   );
+// }
   return active.reduce((a, b) =>
     effectivePrice(b, now) < effectivePrice(a, now) ? b : a,
   );
+}
+
+// ── Fixed price per currency ────────────────────────────────────────────
+// The price the customer sees AND pays, in THEIR currency. USD and IDR are
+// both fixed prices typed by the admin. There is no exchange rate in this
+// file. A currency with no fixed price returns null, and the caller must
+// not guess one.
+//
+// Same rule the storefront already used: the IDR sale price counts only
+// while the offer window is active, otherwise the normal IDR price.
+export function priceForCurrency(
+  v: RawVariant,
+  currency: string,
+  now: number = Date.now(),
+): number | null {
+  const c = currency.toUpperCase();
+
+  if (c === "USD") return effectivePrice(v, now);
+
+  if (c === "IDR") {
+    const raw =
+      isOfferActive(v, now) && v.sale_price_idr != null
+        ? v.sale_price_idr
+        : v.price_idr;
+    if (raw == null) return null;
+    const n = Number(raw);
+    return Number.isFinite(n) && n >= 0 ? n : null;
+  }
+
+  return null;
+}
+
+// The crossed-out "was" price, in the same currency. Null when there is
+// no active offer or no fixed price for that currency.
+export function comparePriceForCurrency(
+  v: RawVariant,
+  currency: string,
+  now: number = Date.now(),
+): number | null {
+  if (!isOfferActive(v, now)) return null;
+  const c = currency.toUpperCase();
+
+  if (c === "USD") return Number(v.price);
+
+  if (c === "IDR") {
+    if (v.price_idr == null) return null;
+    const n = Number(v.price_idr);
+    return Number.isFinite(n) && n >= 0 ? n : null;
+  }
+
+  return null;
 }

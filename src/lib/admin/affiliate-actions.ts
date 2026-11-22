@@ -19,7 +19,9 @@ import { revalidatePath } from "next/cache";
 import { requireRole } from "@/lib/auth/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+// import { isAffiliateEmailTaken } from "@/lib/admin/affiliate-queries";
 import { isAffiliateEmailTaken } from "@/lib/admin/affiliate-queries";
+import { MAX_DISCOUNT_PERCENT } from "@/lib/checkout/discount";
 
 /* ------------------------------------------------------------------ */
 /* Validation                                                          */
@@ -33,9 +35,14 @@ const affiliateInputSchema = z.object({
   email: z.string().trim().toLowerCase().email(),
   stockistId: z.string().uuid().nullable(), // optional: null = unassigned
   notes: z.string().trim().max(2000).nullable(),
-  status: z.enum(["active", "inactive"]), // "deleted" is a separate action
-  
+  // status: z.enum(["active", "inactive"]), // "deleted" is a separate action
+    status: z.enum(["active", "inactive"]), // "deleted" is a separate action
+  // Customer discount on this affiliate's link. Same ceiling (30) as the
+  // database CHECK and applyDiscount(), so all three always agree.
+  discountPercent: z.number().finite().min(0).max(MAX_DISCOUNT_PERCENT),
 });
+  
+
 
 export type AffiliateInput = z.infer<typeof affiliateInputSchema>;
 
@@ -119,8 +126,13 @@ export async function createAffiliate(
       name: data.name,
       email: data.email,
       stockist_id: data.stockistId,
-      notes: data.notes,
+    //   notes: data.notes,
+    //   status: data.status,
+    // })
+    // .select("id")
+          notes: data.notes,
       status: data.status,
+      referral_discount_percent: data.discountPercent,
     })
     .select("id")
     .single();
@@ -310,7 +322,7 @@ export async function updateAffiliate(
       stockist_id: data.stockistId,
       notes: data.notes,
       status: data.status,
-      
+         referral_discount_percent: data.discountPercent,
     })
     .eq("id", id);
 

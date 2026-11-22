@@ -1,12 +1,16 @@
 import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import type { Product, ProductState } from "@/data/products";
-
 import {
   pickCheapestActiveVariant,
-  effectivePrice,
-  isOfferActive,
+  priceForCurrency,
+  comparePriceForCurrency,
 } from "@/lib/variant-pricing";
+// import {
+//   pickCheapestActiveVariant,
+//   effectivePrice,
+//   isOfferActive,
+// } from "@/lib/variant-pricing";
 
 async function fetchStorefrontProducts(): Promise<Product[]> {
   const supabase = await createClient();
@@ -35,21 +39,33 @@ async function fetchStorefrontProducts(): Promise<Product[]> {
       (v: any) => v.status === "active",
     );
    const cheapest = pickCheapestActiveVariant(p.product_variants ?? [], now);
-const onSale = !!cheapest && isOfferActive(cheapest, now);
+   
+// const onSale = !!cheapest && isOfferActive(cheapest, now);
 
-// USD: fixed admin price. IDR: fixed admin price. No conversion.
-const basePrice = cheapest ? effectivePrice(cheapest, now) : 0;
-const compareAt: number | undefined = onSale ? Number(cheapest!.price) : undefined;
-const idrPrice: number | undefined = !cheapest
-  ? undefined
-  : onSale && cheapest.sale_price_idr != null
-    ? Number(cheapest.sale_price_idr)
-    : cheapest.price_idr != null
-      ? Number(cheapest.price_idr)
-      : undefined;
-const idrCompare: number | undefined =
-  onSale && cheapest!.price_idr != null ? Number(cheapest!.price_idr) : undefined;
-
+// // USD: fixed admin price. IDR: fixed admin price. No conversion.
+// const basePrice = cheapest ? effectivePrice(cheapest, now) : 0;
+// const compareAt: number | undefined = onSale ? Number(cheapest!.price) : undefined;
+// const idrPrice: number | undefined = !cheapest
+//   ? undefined
+//   : onSale && cheapest.sale_price_idr != null
+//     ? Number(cheapest.sale_price_idr)
+//     : cheapest.price_idr != null
+//       ? Number(cheapest.price_idr)
+//       : undefined;
+// const idrCompare: number | undefined =
+//   onSale && cheapest!.price_idr != null ? Number(cheapest!.price_idr) : undefined;
+// USD and IDR are both FIXED admin prices. No conversion. The same helpers
+// are used by checkout, so the price shown is the price charged.
+const basePrice = cheapest ? (priceForCurrency(cheapest, "USD", now) ?? 0) : 0;
+const compareAt: number | undefined = cheapest
+  ? (comparePriceForCurrency(cheapest, "USD", now) ?? undefined)
+  : undefined;
+const idrPrice: number | undefined = cheapest
+  ? (priceForCurrency(cheapest, "IDR", now) ?? undefined)
+  : undefined;
+const idrCompare: number | undefined = cheapest
+  ? (comparePriceForCurrency(cheapest, "IDR", now) ?? undefined)
+  : undefined;
 const hasSale = compareAt !== undefined;
 const totalStock = variants.reduce((s: number, v: any) => s + v.stock, 0);
 const isNew = Date.now() - new Date(p.created_at).getTime() < 30 * 86400000;

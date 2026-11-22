@@ -38,6 +38,7 @@ export type MySettings = {
   avatarUrl: string | null; // short-lived signed link, null = no photo
   commissionPercent: number; // effective rate (tier or override), read-only
   commissionTier: string;
+    discountPercent: number; 
   bank: MyBankDetails | null; // null until the affiliate saves them
   countries: string[]; // suggestions for the Country field
 };
@@ -95,7 +96,7 @@ export async function getMySettings(): Promise<MySettings | null> {
     supabase
       .from("affiliates")
       .select(
-        "id, name, email, phone, country, country_code, display_currency, profile_locked_at, region, avatar_path, commission_override_percent, affiliate_bank_details ( account_holder_name, bank_name, bank_country, account_number_or_iban, swift_bic, routing_code, payout_currency )",
+        "id, name, email, phone, country, country_code, display_currency, profile_locked_at, region, avatar_path, commission_override_percent,referral_discount_percent, affiliate_bank_details ( account_holder_name, bank_name, bank_country, account_number_or_iban, swift_bic, routing_code, payout_currency )",
       )
       .eq("profile_id", user.id)
       .neq("status", "deleted")
@@ -139,7 +140,9 @@ export async function getMySettings(): Promise<MySettings | null> {
     region: data.region,
     avatarUrl,
     commissionPercent: commission.percent,
-    commissionTier: commission.tier,
+    // commissionTier: commission.tier,
+        commissionTier: commission.tier,
+    discountPercent: num(data.referral_discount_percent),
     bank: bank
       ? {
           accountHolderName: bank.account_holder_name,
