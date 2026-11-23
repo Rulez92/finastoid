@@ -49,7 +49,7 @@ export function ReferralStrip({ link }: { link: MyReferralLink }) {
               }`}
             />
             {link.isActive
-              ? "Orders placed through it are credited to you."
+              ? "Orders placed through your referral link will be credited to your account."
               : "Your account is not active, so orders are not credited."}
           </p>
         </div>

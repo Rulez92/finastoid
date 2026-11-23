@@ -102,8 +102,7 @@ export default async function AffiliateOrdersPage({
                   </span>
                 </h1>
                 <p className="mt-1.5 max-w-xl font-sans text-[13px] leading-relaxed text-aff-cream-50/75 sm:text-[14px]">
-                  Orders placed through your referral links, with their status
-                  and the commission you earn on each.
+                View orders placed through your referral links, track their status, and see the commission earned on each order.
                 </p>
                 
               </div>

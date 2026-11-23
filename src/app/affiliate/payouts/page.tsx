@@ -44,8 +44,7 @@ export default async function AffiliatePayoutsPage() {
                   </span>
                 </h1>
                 <p className="mt-1.5 max-w-xl font-sans text-[13px] leading-relaxed text-aff-cream-50/75 sm:text-[14px]">
-                  Pick the orders you want paid, send a request, and track it
-                  until the money reaches your bank.
+                  Select orders for payout, submit your request, and track payment status.
                 </p>
               </div>
 

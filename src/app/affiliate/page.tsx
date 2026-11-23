@@ -514,7 +514,7 @@ if (!data || !settings) {
  
 
   {/* Discount chip, to the right of the tier circle */}
-  <div className="w-[116px] rounded-xl border border-aff-gold-400/40 bg-aff-green-950/60 px-3 py-2.5 text-center md:w-[150px]">
+  <div className="w-[216px] rounded-xl border border-aff-gold-400/40 bg-aff-green-950/60 px-8 py-2.5 text-center ">
     <p className="flex items-center justify-center gap-1.5 font-sans text-[10px] uppercase tracking-[0.14em] text-aff-cream-50/65">
       <Tag
         className="h-3 w-3 shrink-0 text-aff-gold-300"
@@ -528,7 +528,7 @@ if (!data || !settings) {
     </p>
     <p className="mt-1 font-sans text-[10px] text-aff-cream-50/55">
       {settings.discountPercent > 0
-        ? "off for buyers on your link"
+        ? "Discount for customers who shop through your referral link."
         : "no discount on your link"}
     </p>
   </div>

@@ -505,7 +505,7 @@ export function EarningsDonut({
         <span className="flex h-6 w-6 items-center justify-center rounded-lg border border-aff-gold-400/40 bg-aff-green-950/60 text-aff-gold-300">
           <PieIcon className="h-3.5 w-3.5" strokeWidth={2} aria-hidden="true" />
         </span>
-        Earnings split
+       Earnings Breakdown
       </p>
 
       {total > 0 && (
@@ -521,7 +521,7 @@ export function EarningsDonut({
             </p>
           )} */}
           <p className="mt-1 font-sans text-[12px] text-aff-cream-50/70">
-            Total across all statuses
+           Total Earnings Across All Statuses
           </p>
         </div>
       )}
@@ -542,7 +542,7 @@ export function EarningsDonut({
           <div
             className="relative mx-auto mt-3 h-[160px] w-full"
             role="img"
-            aria-label={`Earnings split, total ${totalText}, ${paidPct}% paid out. ${slices
+            aria-label={`Earnings Breakdown, total ${totalText}, ${paidPct}% paid out. ${slices
               .map((s) => `${s.name} ${usd(s.value)}`)
               .join(", ")}.`}
           >

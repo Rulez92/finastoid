@@ -30,7 +30,7 @@ export const affiliateNav: AffiliateNavItem[] = [
   { label: "Orders", href: "/affiliate/orders", icon: ShoppingBag },
   { label: "Payout Requests", href: "/affiliate/payouts", icon: Wallet },
  { label: "Announcements", href: "/affiliate/announcements", icon: Megaphone },
- { label: "Self Purchase", href: "/shop", icon: BadgePercent },
+ { label: "Personal Orders", href: "/shop", icon: BadgePercent },
 
 // {
 //   label: "Marketing Tools",

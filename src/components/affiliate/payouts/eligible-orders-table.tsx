@@ -212,14 +212,14 @@ export default function EligibleOrdersTable({
       width: 150,
     },
     {
-      title: "Shipped",
+      title: "Shipped Date",
       dataIndex: "shippedAt",
       key: "shippedAt",
       width: 120,
       render: (v: string | null) => shortDate(v),
     },
     {
-      title: "Order total",
+      title: "Order Total",
       dataIndex: "orderTotalUsd",
       key: "orderTotalUsd",
       // align: "right",
@@ -227,19 +227,19 @@ export default function EligibleOrdersTable({
       render: (v: number) => usd(v),
     },
     {
-      title: "Rate",
+      title: "Comission Rate",
       dataIndex: "commissionPercent",
       key: "commissionPercent",
       // align: "right",
-      width: 80,
+      width: 140,
       render: (v: number) => `${v}%`,
     },
     {
-      title: "Commission",
+      title: "Commission Amount",
       dataIndex: "commissionUsd",
       key: "commissionUsd",
       // align: "right",
-      width: 120,
+      width: 180,
       render: (v: number) => <strong>{usd(v)}</strong>,
     },
   ];
@@ -316,15 +316,17 @@ export default function EligibleOrdersTable({
 
         <Table<EligibleOrder>
           size="middle"
-          className="aff-orders-table"
+          // className="aff-orders-table"
+                    className="aff-orders-table "
           rowKey="orderId"
           columns={columns}
           dataSource={orders}
           pagination={false}
-          scroll={{ x: 560, y: 420 }}
+          // scroll={{ x: 560, y: 420 }}
+                    scroll={{ x: "100%", y: 420 }}
           locale={{
             emptyText:
-              "No orders are ready yet. Orders become available after they ship and the refund window ends.",
+              "No orders are currently eligible for payout. Orders become eligible once shipped and the refund period has ended.",
           }}
           rowSelection={{
             selectedRowKeys: selectedKeys,

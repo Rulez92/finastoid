@@ -7,24 +7,24 @@ export const SUPPORT_TEXT = {
     titleLead: "Your",
     titleAccent: "Support",
     subtitle:
-      "Questions about orders, payouts or your account? Message the Finasto team directly.",
+      "Have questions about orders, payouts or your account? Contact the FINASTO™ team directly.",
     whatsapp: "Chat with us on WhatsApp",
     whatsappOff: "WhatsApp chat is unavailable right now",
   },
   composer: {
     title: "Send us a message",
-    subtitle: "We will reply to your login email.",
+    subtitle: "We will respond to your registered email address.",
   },
   details: {
     title: "Your details",
     name: "Name",
     code: "Affiliate code",
-    email: "Reply email",
+    email: "Registered Email",
     none: "Not available",
   },
   response: {
     title: "Response time",
-    body: "We usually reply within 1 business day. WhatsApp is the fastest way for urgent questions.",
+    body: "Our team typically responds within one business day. For urgent enquiries, contact us via WhatsApp for faster assistance.",
   },
   tips: {
     title: "Get help faster",
@@ -37,7 +37,7 @@ export const SUPPORT_TEXT = {
   form: {
     topics: "Quick topic",
     subject: "Subject",
-    subjectPlaceholder: "e.g. Payout request question",
+    subjectPlaceholder: "e.g. Question about a payout",
     message: "Message",
     messagePlaceholder: "Describe what you need help with",
     send: "Send message",

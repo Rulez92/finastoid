@@ -652,7 +652,7 @@ function HeroCard({
             <Wallet className="h-5 w-5" strokeWidth={1.7} />
           </span>
           <p className="font-sans text-[14px] font-medium text-aff-cream-50/80">
-            Available to request
+          Available for Payout
           </p>
         </div>
 
@@ -697,7 +697,7 @@ function HeroCard({
                 aria-hidden
                 className="h-2 w-2 rounded-full bg-aff-gold-300"
               />
-              Pending (refund window)
+             Pending (Refund Period)
             </dt>
             <dd className="font-semibold text-aff-cream-50 [font-variant-numeric:tabular-nums]">
               {pending}
@@ -785,7 +785,7 @@ export function StatCards({
           icon={Undo2}
           value={counts.refundedOrders}
           format={(n) => count.format(Math.round(n))}
-          hint="Orders refunded"
+          hint="Refunded Orders"
         />
         <QuietCard
           index={3}

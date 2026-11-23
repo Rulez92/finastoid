@@ -60,10 +60,10 @@
 // Monthly sales is in USD. The month is a UTC calendar month.
 
 const TIERS = [
-  { name: "Basic", minSales: 0, percent: 15 },
-  { name: "Plus", minSales: 100, percent: 18 },
-  { name: "Superior", minSales: 300, percent: 21 },
-  { name: "Champion", minSales: 500, percent: 24 },
+  { name: "BASIC", minSales: 0, percent: 15 },
+  { name: "PLUS ", minSales: 100, percent: 18 },
+  { name: "SUPERIOR", minSales: 300, percent: 21 },
+  { name: "CHAMPION", minSales: 500, percent: 24 },
 ] as const;
 
 const DAY = 24 * 60 * 60 * 1000;
