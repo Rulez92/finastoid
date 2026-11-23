@@ -510,11 +510,11 @@ if (!data || !settings) {
 
               {/* Premium tier badge (right side, sm and up) */}
            {/* Premium tier badge + customer discount (right side) */}
-<div className="flex shrink-0 items-center justify-center gap-8 md:gap-25">
+<div className="flex w-full min-w-0 items-center justify-between gap-3 sm:w-auto sm:shrink-0 sm:justify-center sm:gap-8 md:gap-12">
  
 
   {/* Discount chip, to the right of the tier circle */}
-  <div className="w-[216px] rounded-xl border border-aff-gold-400/40 bg-aff-green-950/60 px-8 py-2.5 text-center ">
+  <div className="min-w-0 flex-1 rounded-xl border border-aff-gold-400/40 bg-aff-green-950/60 px-3 py-2.5 text-center sm:w-[216px] sm:flex-none sm:px-8">
     <p className="flex items-center justify-center gap-1.5 font-sans text-[10px] uppercase tracking-[0.14em] text-aff-cream-50/65">
       <Tag
         className="h-3 w-3 shrink-0 text-aff-gold-300"
@@ -538,7 +538,7 @@ if (!data || !settings) {
                   className="hidden h-12 w-px bg-gradient-to-b from-transparent via-aff-gold-400/50 to-transparent md:block"
                 /> */}
                 
-                <div className="relative flex h-20 w-20 items-center justify-center rounded-full border border-aff-gold-400/50 bg-aff-green-950/60 shadow-[0_0_28px_-4px_rgba(241,204,156,0.45)] md:h-28 md:w-28">
+                <div className="relative flex h-20 w-20 shrink-0 items-center justify-center rounded-full border border-aff-gold-400/50 bg-aff-green-950/60 shadow-[0_0_28px_-4px_rgba(241,204,156,0.45)] md:h-28 md:w-28">
                   {/* <span
                     aria-hidden="true"
                     className="absolute inset-[5px] rounded-full border border-dashed border-aff-gold-400/30"
