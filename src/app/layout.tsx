@@ -13,6 +13,7 @@ import { ScrollToTop } from "@/components/layout/scroll-to-top";
 // import { getStorefrontProducts } from "@/lib/storefront-queries";
 import { getStorefrontProducts } from "@/lib/storefront-queries";
 import { canChooseCurrency } from "@/lib/geo-server";
+import { ReferralDiscountBar } from "@/components/referral/referral-discount-bar";
 import { AuthLoadingProvider } from "@/components/AuthLoadingProvider";
 import { ProductsProvider } from "@/components/providers/products-provider";
 import NextTopLoader from "nextjs-toploader";
@@ -81,6 +82,7 @@ export default async function RootLayout({
                     <CartProvider>
                       {children}
                       <CartDrawer products={products} />
+                        <ReferralDiscountBar />
                     </CartProvider>
                   </ProductsProvider>
                 </MarketProvider>

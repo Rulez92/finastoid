@@ -542,7 +542,7 @@ export function OrdersFilters({
               value={commissionState}
               onChange={(value) => updateParams({ commission: value ?? "" })}
               allowClear
-              placeholder="All commission  statuses"
+              placeholder="All   statuses"
               className="w-full sm:col-span-2 lg:col-span-1 lg:w-[220px]"
               aria-label="Filter by commission state"
               options={COMMISSION_STATE_OPTIONS}

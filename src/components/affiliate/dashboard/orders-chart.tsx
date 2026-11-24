@@ -200,8 +200,7 @@ export function OrdersChart({
         <div className="flex w-full flex-col gap-2 sm:w-auto sm:shrink-0 sm:flex-row sm:items-center">
           <Segmented<"commission" | "orders">
             size="large"
-            block
-            className="touch-manipulation font-medium [&_.ant-segmented-item-selected]:!bg-aff-green-900 [&_.ant-segmented-item-selected]:!text-aff-gold-300 [&_.ant-segmented-thumb]:!bg-aff-green-900"
+            className="shrink-0 touch-manipulation font-medium [&_.ant-segmented-item-label]:!overflow-visible [&_.ant-segmented-item-label]:!text-clip [&_.ant-segmented-item-selected]:!bg-aff-green-900 [&_.ant-segmented-item-selected]:!text-aff-gold-300 [&_.ant-segmented-thumb]:!bg-aff-green-900"
             value={metric}
             onChange={setMetric}
             options={[
