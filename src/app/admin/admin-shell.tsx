@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
+import { App } from "antd";
 import { Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AdminSidebar } from "./admin-sidebar";
@@ -39,6 +40,7 @@ export function AdminShell({
   }, [open]);
 
   return (
+    <App component={false}>
     <div className="relative min-h-screen bg-cream dark:bg-cream-soft">
       <div
         aria-hidden
@@ -114,5 +116,6 @@ export function AdminShell({
         <main className="p-4 sm:p-6 lg:p-8">{children}</main>
       </div>
     </div>
+    </App>
   );
 }

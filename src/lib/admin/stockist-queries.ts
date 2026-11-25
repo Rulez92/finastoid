@@ -13,7 +13,15 @@
 
 import { requireRole } from "@/lib/auth/server";
 import { createClient } from "@/lib/supabase/server"; // adjust to your server client helper
+import type { TierStatus } from "@/lib/admin/tier-actions";
 
+// Supabase returns a joined row as an object or a one-item array depending
+// on the relationship typing, so accept both.
+type TierJoin = { name: string; commission_percent: number | string };
+function pickTier(t: unknown): TierJoin | null {
+  const row = Array.isArray(t) ? t[0] : t;
+  return (row as TierJoin | null | undefined) ?? null;
+}
 const MISSING_CODES = new Set(["PGRST205", "PGRST204", "42P01", "42703"]);
 
 function isMissingTableOrColumn(error: { code?: string } | null): boolean {
@@ -39,7 +47,9 @@ export type StockistListItem = {
   country: string | null;
   region: string | null;
   status: StockistStatus;
-  defaultProfitPercent: number;
+  tierId: string;
+  tierName: string;
+  commissionPercent: number;
   affiliateCount: number; // 0 until the Affiliates section exists
   updatedAt: string;
   hasAccount: boolean;
@@ -66,8 +76,10 @@ export type StockistDetail = {
   phone: string | null;
   country: string | null;
   region: string | null;
-  status: StockistStatus;
-  defaultProfitPercent: number;
+   status: StockistStatus;
+  tierId: string;
+  tierName: string;
+  commissionPercent: number;
   notes: string | null;
   // Populated once Affiliates/Orders exist; safe zeros/empty until then.
   assignedAffiliates: StockistAffiliateRow[];
@@ -102,7 +114,7 @@ export async function listStockists(params: {
   let query = supabase
     .from("stockists")
     .select(
-      "id, name, email, phone, country, region, status, default_profit_percent,profile_id, updated_at",
+      "id, name, email, phone, country, region, status, tier_id, profile_id, updated_at, tier:associate_tiers ( name, commission_percent )",
       {
         count: "exact",
       },
@@ -136,7 +148,9 @@ export async function listStockists(params: {
       country: row.country,
       region: row.region,
       status: row.status,
-      defaultProfitPercent: num(row.default_profit_percent),
+      tierId: row.tier_id,
+      tierName: pickTier(row.tier)?.name ?? "—",
+      commissionPercent: num(pickTier(row.tier)?.commission_percent),
       affiliateCount: await countAffiliatesForStockist(row.id),
       updatedAt: row.updated_at,
       hasAccount: row.profile_id != null,
@@ -175,7 +189,7 @@ export async function getStockistById(
   const { data, error } = await supabase
     .from("stockists")
     .select(
-      "id, name, email, phone, country, region, status, default_profit_percent,profile_id, notes, created_at, updated_at",
+      "id, name, email, phone, country, region, status, tier_id, profile_id, notes, created_at, updated_at, tier:associate_tiers ( name, commission_percent )",
     )
     .eq("id", id)
     .maybeSingle();
@@ -196,7 +210,9 @@ export async function getStockistById(
     country: data.country,
     region: data.region,
     status: data.status,
-    defaultProfitPercent: num(data.default_profit_percent),
+    tierId: data.tier_id,
+    tierName: pickTier(data.tier)?.name ?? "—",
+    commissionPercent: num(pickTier(data.tier)?.commission_percent),
     notes: data.notes,
     assignedAffiliates,
     totalSales: assignedAffiliates.reduce((sum, a) => sum + a.sales, 0),
@@ -316,4 +332,99 @@ export async function getStockistFieldSuggestions(): Promise<StockistFieldSugges
     ]),
     region: uniq(rows.map((r) => r.region)),
   };
+}
+/* ------------------------------------------------------------------ */
+/* Associate tiers                                                      */
+/* ------------------------------------------------------------------ */
+
+export type TierOption = {
+  id: string;
+  name: string;
+  purchaseAmount: number;
+  commissionPercent: number;
+  status: TierStatus;
+};
+
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+// Dropdown source for the stockist form. Returns active tiers, plus the
+// stockist's CURRENT tier even if it was archived, so editing an existing
+// stockist never shows a blank select.
+export async function listTierOptions(
+  currentTierId?: string | null,
+): Promise<TierOption[]> {
+  await requireRole("admin");
+  const supabase = await createClient();
+
+  let query = supabase
+    .from("associate_tiers")
+    .select("id, name, purchase_amount, commission_percent, status")
+    .order("sort_order")
+    .order("created_at");
+
+  if (currentTierId && UUID_RE.test(currentTierId)) {
+    query = query.or(`status.eq.active,id.eq.${currentTierId}`);
+  } else {
+    query = query.eq("status", "active");
+  }
+
+  const { data, error } = await query;
+  if (error) {
+    if (isMissingTableOrColumn(error)) return [];
+    throw new Error(`Failed to load tiers: ${error.message}`);
+  }
+
+  return (data ?? []).map((t) => ({
+    id: t.id,
+    name: t.name,
+    purchaseAmount: num(t.purchase_amount),
+    commissionPercent: num(t.commission_percent),
+    status: t.status,
+  }));
+}
+
+export type TierListItem = TierOption & {
+  sortOrder: number;
+  stockistCount: number;
+  updatedAt: string;
+};
+
+// For the /admin/associate-tiers page: every tier (active and archived)
+// with how many stockists use it, so archive/delete can warn correctly.
+export async function listTiers(): Promise<TierListItem[]> {
+  await requireRole("admin");
+  const supabase = await createClient();
+
+  const [tiers, stockists] = await Promise.all([
+    supabase
+      .from("associate_tiers")
+      .select(
+        "id, name, purchase_amount, commission_percent, status, sort_order, updated_at",
+      )
+      .order("sort_order")
+      .order("created_at"),
+    supabase.from("stockists").select("tier_id"),
+  ]);
+
+  if (tiers.error) {
+    if (isMissingTableOrColumn(tiers.error)) return [];
+    throw new Error(`Failed to load tiers: ${tiers.error.message}`);
+  }
+
+  const counts = new Map<string, number>();
+  for (const row of stockists.data ?? []) {
+    counts.set(row.tier_id, (counts.get(row.tier_id) ?? 0) + 1);
+  }
+
+  return (tiers.data ?? []).map((t) => ({
+    id: t.id,
+    name: t.name,
+    purchaseAmount: num(t.purchase_amount),
+    commissionPercent: num(t.commission_percent),
+    status: t.status,
+    sortOrder: t.sort_order,
+    stockistCount: counts.get(t.id) ?? 0,
+    updatedAt: t.updated_at,
+  }));
 }

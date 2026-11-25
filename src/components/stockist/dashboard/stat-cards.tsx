@@ -1,129 +1,22 @@
-// // The four headline numbers on the stockist Dashboard, in the same style as
-// // the affiliate stat cards: stock remaining, packs sold, sales and active
-// // affiliates. A plain server component (no hooks, no currency switching:
-// // stockist amounts are USD only). Nothing is calculated here except
-// // formatting; every number comes from getMyStockistDashboard().
-// //
-// // "Packs sold" and "Sales" follow the chart period (?range=); "Stock
-// // remaining" and "Active affiliates" are the situation right now.
-
-// import {
-//   Boxes,
-//   PackageCheck,
-//   Users,
-//   Wallet,
-//   type LucideIcon,
-// } from "lucide-react";
-// import { cn, formatPrice } from "@/lib/utils";
-// import type { StockistDashboard } from "@/lib/stockist/dashboard-queries";
-// import { DASHBOARD_RANGES } from "@/lib/affiliate/dashboard-ranges";
-
-// const count = new Intl.NumberFormat("en-US");
-
-// // Static class names, so Tailwind can see them at build time.
-// const ACCENTS = {
-//   green: "bg-green/10 text-green",
-//   copper: "bg-copper/10 text-copper",
-//   gray: "bg-espresso/5 text-warm-gray",
-// } as const;
-
-// type StatProps = {
-//   title: string;
-//   value: string;
-//   icon: LucideIcon;
-//   accent: keyof typeof ACCENTS;
-//   hint?: string;
-// };
-
-// function StatCard({ title, value, icon: Icon, accent, hint }: StatProps) {
-//   return (
-//     <div className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-border-strong bg-white p-4 shadow-[0_1px_2px_rgba(50,30,24,0.06),0_6px_16px_rgba(50,30,24,0.05)] transition-shadow duration-200 hover:shadow-[0_2px_4px_rgba(50,30,24,0.08),0_10px_24px_rgba(50,30,24,0.08)] dark:border-border dark:shadow-none">
-//       <span
-//         aria-hidden
-//         className="absolute inset-x-0 top-0 h-[2px] bg-copper/70 dark:hidden"
-//       />
-//       <div className="flex items-start justify-between gap-2">
-//         <p className="font-sans text-[11px] font-medium uppercase tracking-[0.14em] text-warm-gray">
-//           {title}
-//         </p>
-//         <span
-//           className={cn(
-//             "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg",
-//             ACCENTS[accent],
-//           )}
-//         >
-//           <Icon className="h-4 w-4" strokeWidth={1.7} />
-//         </span>
-//       </div>
-
-//       <p className="mt-3 font-display text-[28px] leading-none tabular-nums text-espresso">
-//         {value}
-//       </p>
-
-//       {hint && (
-//         <p className="mt-1.5 font-sans text-[12px] text-warm-gray">{hint}</p>
-//       )}
-//     </div>
-//   );
-// }
-
-// export function StatCards({ data }: { data: StockistDashboard }) {
-//   const periodLabel =
-//     DASHBOARD_RANGES.find((r) => r.value === data.range)?.label ?? "";
-//   const lowCount = data.lowStock.length;
-
-//   return (
-//     <section aria-label="Summary">
-//       {/* 2 per row on phones, 4 on desktop. */}
-//       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-//         <StatCard
-//           title="Stock remaining"
-//           value={count.format(data.stockRemaining)}
-//           icon={Boxes}
-//           accent="green"
-//           hint={
-//             lowCount > 0
-//               ? `${lowCount} ${lowCount === 1 ? "pack is" : "packs are"} running low`
-//               : "All packs well stocked"
-//           }
-//         />
-//         <StatCard
-//           title="Packs sold"
-//           value={count.format(data.period.units)}
-//           icon={PackageCheck}
-//           accent="gray"
-//           hint={periodLabel}
-//         />
-//         <StatCard
-//           title="Sales"
-//           value={formatPrice(data.period.salesUsd, "USD")}
-//           icon={Wallet}
-//           accent="copper"
-//           hint={periodLabel}
-//         />
-//         <StatCard
-//           title="Active affiliates"
-//           value={count.format(data.activeAffiliates)}
-//           icon={Users}
-//           accent="green"
-//           hint="Assigned to you"
-//         />
-//       </div>
-//     </section>
-//   );
-// }
-// The four headline numbers on the stockist Dashboard, in the same style as
-// the affiliate stat cards: stock remaining, packs sold, sales and active
-// affiliates. A plain server component (no hooks, no currency switching:
-// stockist amounts are USD only). Nothing is calculated here except
-// formatting; every number comes from getMyStockistDashboard().
+// components/stockist/dashboard/stat-cards.tsx
 //
-// "Packs sold" and "Sales" follow the chart period (?range=); "Stock
-// remaining" and "Active affiliates" are the situation right now.
+// Headline numbers on the stockist Dashboard, driven by
+// my_stockist_commission_dashboard() via getMyStockistDashboard().
+//
+// Row 1, "right now" (not affected by ?range=): the four earnings buckets
+// that always match the Payouts page: available, pending, in review, paid.
+// Row 2, "this period" (follows ?range=): commission, orders, sales and
+// active affiliates.
+//
+// A plain server component. Nothing is calculated here except formatting.
 
 import {
-  Boxes,
-  PackageCheck,
+  BadgeCheck,
+  Clock,
+  Coins,
+  Hourglass,
+  ShoppingBag,
+  TrendingUp,
   Users,
   Wallet,
   type LucideIcon,
@@ -135,8 +28,7 @@ import { DASHBOARD_RANGES } from "@/lib/affiliate/dashboard-ranges";
 const count = new Intl.NumberFormat("en-US");
 
 // One look per card. "hero" is the dark main card; the rest are light
-// tinted cards with a colored top line and icon chip. Full class names,
-// so Tailwind can see them at build time.
+// tinted cards. Full class names so Tailwind can see them at build time.
 const TONES = {
   hero: {
     card: "border-aff-gold-400/30 bg-gradient-to-br from-aff-green-950 via-aff-green-900 to-aff-green-800",
@@ -147,19 +39,19 @@ const TONES = {
     hint: "text-aff-cream-50/70",
     glow: true,
   },
-  teal: {
-    card: "border-[#D6E4EA] bg-[#F5F9FB]",
-    line: "from-[#2E6F86] via-[#6FA8BD] to-[#2E6F86]",
-    chip: "bg-[#1F4E5F] text-[#CFE8F1]",
+  gold: {
+    card: "border-[#EBDDC3] bg-[#FBF6EC]",
+    line: "from-[#AC834E] via-[#F1CC9C] to-[#AC834E]",
+    chip: "bg-[#7A5526] text-[#F6E3C4]",
     title: "text-aff-muted",
     value: "text-aff-green-900",
     hint: "text-aff-muted",
     glow: false,
   },
-  gold: {
-    card: "border-[#EBDDC3] bg-[#FBF6EC]",
-    line: "from-[#AC834E] via-[#F1CC9C] to-[#AC834E]",
-    chip: "bg-[#7A5526] text-[#F6E3C4]",
+  teal: {
+    card: "border-[#D6E4EA] bg-[#F5F9FB]",
+    line: "from-[#2E6F86] via-[#6FA8BD] to-[#2E6F86]",
+    chip: "bg-[#1F4E5F] text-[#CFE8F1]",
     title: "text-aff-muted",
     value: "text-aff-green-900",
     hint: "text-aff-muted",
@@ -229,7 +121,7 @@ function StatCard({ title, value, icon: Icon, tone, hint }: StatProps) {
 
       <p
         className={cn(
-          "mt-3 break-words font-display text-[24px] font-semibold leading-tight [font-variant-numeric:tabular-nums] sm:text-[28px]",
+          "mt-3 break-words font-display text-[22px] font-semibold leading-tight [font-variant-numeric:tabular-nums] min-[400px]:text-[24px] sm:text-[28px]",
           t.value,
         )}
       >
@@ -245,47 +137,107 @@ function StatCard({ title, value, icon: Icon, tone, hint }: StatProps) {
   );
 }
 
+// Small stat inside the "this period" strip.
+function PeriodStat({
+  title,
+  value,
+  icon: Icon,
+}: {
+  title: string;
+  value: string;
+  icon: LucideIcon;
+}) {
+  return (
+    <div className="flex min-w-0 items-center gap-3">
+      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-aff-green-900 text-aff-gold-300">
+        <Icon className="h-[18px] w-[18px]" strokeWidth={1.7} aria-hidden />
+      </span>
+      <div className="min-w-0">
+        <p className="truncate font-sans text-[11px] font-medium uppercase tracking-[0.12em] text-aff-muted">
+          {title}
+        </p>
+        <p className="break-words font-display text-[18px] font-semibold leading-tight text-aff-green-900 [font-variant-numeric:tabular-nums] sm:text-[20px]">
+          {value}
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export function StatCards({ data }: { data: StockistDashboard }) {
   const periodLabel =
     DASHBOARD_RANGES.find((r) => r.value === data.range)?.label ?? "";
-  const lowCount = data.lowStock.length;
+  const { summary, period } = data;
 
   return (
-    <section aria-label="Summary">
-      {/* 2 per row on phones, 4 on desktop. */}
+    <section aria-label="Summary" className="flex flex-col gap-3 sm:gap-4">
+      {/* Earnings now: 2 per row on phones, 4 on desktop. */}
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard
-          title="Stock remaining"
-          value={count.format(data.stockRemaining)}
-          icon={Boxes}
-          tone="hero"
-          hint={
-            lowCount > 0
-              ? `${lowCount} ${lowCount === 1 ? "pack is" : "packs are"} running low`
-              : "All packs well stocked"
-          }
-        />
-        <StatCard
-          title="Packs sold"
-          value={count.format(data.period.units)}
-          icon={PackageCheck}
-          tone="teal"
-          hint={periodLabel}
-        />
-        <StatCard
-          title="Sales"
-          value={formatPrice(data.period.salesUsd, "USD")}
+          title="Available"
+          value={formatPrice(summary.availableUsd, "USD")}
           icon={Wallet}
-          tone="gold"
-          hint={periodLabel}
+          tone="hero"
+          hint="Ready for a payout request"
         />
         <StatCard
-          title="Active affiliates"
-          value={count.format(data.activeAffiliates)}
-          icon={Users}
-          tone="emerald"
-          hint="Assigned to you"
+          title="Pending"
+          value={formatPrice(summary.pendingUsd, "USD")}
+          icon={Clock}
+          tone="gold"
+          hint="Not shipped or in refund window"
         />
+        <StatCard
+          title="In review"
+          value={formatPrice(summary.inReviewUsd, "USD")}
+          icon={Hourglass}
+          tone="teal"
+          hint="Inside a requested payout"
+        />
+        <StatCard
+          title="Paid"
+          value={formatPrice(summary.paidUsd, "USD")}
+          icon={BadgeCheck}
+          tone="emerald"
+          hint="Already paid to you"
+        />
+      </div>
+
+      {/* Selected period */}
+      <div className="relative isolate overflow-hidden rounded-2xl border border-aff-border bg-gradient-to-b from-aff-ivory to-white p-4 pt-5 shadow-[0_6px_16px_-12px_rgba(3,24,7,0.3)] sm:p-5 sm:pt-6">
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-aff-gold-600 via-aff-gold-300 to-aff-gold-600 opacity-70"
+        />
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <p className="font-sans text-[13px] font-semibold text-aff-green-900">
+            Performance
+          </p>
+          {periodLabel && (
+            <span className="rounded-full border border-aff-gold-500/40 bg-aff-ivory px-3 py-0.5 font-sans text-[12px] font-medium text-aff-green-900">
+              {periodLabel}
+            </span>
+          )}
+        </div>
+
+        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <PeriodStat
+            title="Commission"
+            value={formatPrice(period.commissionUsd, "USD")}
+            icon={Coins}
+          />
+          <PeriodStat
+            title="Orders"
+            value={count.format(period.orders)}
+            icon={ShoppingBag}
+          />
+         
+          <PeriodStat
+            title="Active affiliates"
+            value={count.format(data.activeAffiliates)}
+            icon={Users}
+          />
+        </div>
       </div>
     </section>
   );

@@ -3,6 +3,7 @@ import { requireRole } from "@/lib/auth/server";
 import { createClient } from "@/lib/supabase/server";
 import { signOutAction } from "@/lib/auth/actions";
 import { StockistShell } from "@/components/stockist/layout/stockist-shell";
+import { getMyUnreadPartnerAnnouncementCount } from "@/lib/partner/announcement-queries";
 
 export const metadata: Metadata = {
   title: "Stockist — Finasto",
@@ -24,7 +25,20 @@ export default async function StockistLayout({
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("my_stockist_profile");
   if (error) console.error("[stockist layout]", error.message);
-  const stockist = (data as { status: string }[] | null)?.[0];
+  const stockist = (
+    data as
+      | {
+                   id: string;
+          status: string;
+          name: string;
+          phone: string | null;
+          country: string | null;
+          avatar_path: string | null;
+          tier_name: string;
+          commission_percent: number | string | null;
+        }[]
+      | null
+  )?.[0];
 
   if (!stockist || stockist.status !== "active") {
     return (
@@ -50,8 +64,43 @@ export default async function StockistLayout({
     );
   }
 
+  // The photo bucket is private: make a 1-hour signed link. A failure just
+  // means "show initials", it never breaks the page.
+  let avatarUrl: string | null = null;
+  if (stockist.avatar_path) {
+    const { data: signed } = await supabase.storage
+      .from("stockist-avatars")
+      .createSignedUrl(stockist.avatar_path, 60 * 60);
+    avatarUrl = signed?.signedUrl ?? null;
+  }
+
+   // Profile is complete once phone and country are saved. Bank details are
+  // complete once the stockist has a saved row (RLS: own row only).
+  const profileComplete = Boolean(
+    stockist.phone?.trim() && stockist.country?.trim(),
+  );
+  const { data: bankRow } = await supabase
+    .from("stockist_bank_details")
+    .select("stockist_id")
+    .eq("stockist_id", stockist.id)
+    .maybeSingle();
+
+  // Unread announcements for the sidebar badge. Returns 0 on any error,
+  // so it can never break the layout.
+  const unreadAnnouncements =
+    await getMyUnreadPartnerAnnouncementCount("stockist");
+
   return (
-    <StockistShell name={name} email={user.email ?? ""} profileLocked={true}>
+    <StockistShell
+      name={stockist.name || name}
+      email={user.email ?? ""}
+           profileLocked={profileComplete}
+      bankComplete={bankRow != null}
+      avatarUrl={avatarUrl}
+      tierName={stockist.tier_name}
+      commissionPercent={Number(stockist.commission_percent) || 0}
+      unreadAnnouncements={unreadAnnouncements}
+    >
       {children}
     </StockistShell>
   );

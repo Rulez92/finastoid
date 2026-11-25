@@ -10,7 +10,7 @@ import {
   Col,
   Form,
   Input,
-  InputNumber,
+  // InputNumber,
   Row,
   Select,
   Space,
@@ -24,6 +24,7 @@ import {
 import type {
   StockistDetail,
   StockistFieldSuggestions,
+  TierOption,
 } from "@/lib/admin/stockist-queries";
 import { StockistStatusBadge } from "@/components/admin/stockists/stockist-status-badge";
 
@@ -48,7 +49,8 @@ type FormValues = {
   phone: string;
   country: string;
   region: string;
-  defaultProfitPercent: number;
+  tierId?: string;
+
   status: Status;
   notes: string;
 };
@@ -59,7 +61,8 @@ const FORM_FIELDS: (keyof FormValues)[] = [
   "phone",
   "country",
   "region",
-  "defaultProfitPercent",
+  // "defaultProfitPercent",
+    "tierId",
   "status",
   "notes",
 ];
@@ -78,10 +81,12 @@ export function StockistForm({
   mode,
   stockist,
   suggestions,
+  tiers,
 }: {
   mode: "create" | "edit";
   stockist: StockistDetail | null;
   suggestions: StockistFieldSuggestions;
+  tiers: TierOption[];
 }) {
   const router = useRouter();
   const [form] = Form.useForm<FormValues>();
@@ -99,7 +104,7 @@ export function StockistForm({
     phone: stockist?.phone ?? "",
     country: stockist?.country ?? "",
     region: stockist?.region ?? "",
-    defaultProfitPercent: stockist?.defaultProfitPercent ?? 10,
+    tierId: stockist?.tierId,
     // New stockists start active. Anything that is not "active" is shown
     // as inactive, so saving never silently activates a paused account.
     status: !stockist || stockist.status === "active" ? "active" : "inactive",
@@ -115,7 +120,7 @@ export function StockistForm({
       phone: trimOrNull(values.phone),
       country: trimOrNull(values.country),
       region: trimOrNull(values.region),
-      defaultProfitPercent: values.defaultProfitPercent ?? 0,
+      tierId: values.tierId as string,
       notes: trimOrNull(values.notes),
       status: values.status,
     };
@@ -258,20 +263,21 @@ export function StockistForm({
               </Row>
 
               <Form.Item
-                label="Default profit %"
-                name="defaultProfitPercent"
-                rules={[
-                  { required: true, message: "Enter a profit percentage" },
-                ]}
-                extra="Applied automatically on products with no override."
+                label="Associate tier"
+                name="tierId"
+                rules={[{ required: true, message: "Choose a tier" }]}
+                extra="Commission is earned on verified sales of assigned affiliates, at this tier's rate."
                 className="!mb-0"
               >
-                <InputNumber
-                  min={0}
-                  max={100}
-                  step={1}
-                  suffix="%"
-                  className="!w-full"
+                <Select
+                  placeholder="Choose a tier"
+                  notFoundContent="No tiers yet. Create one in Associate Tiers."
+                  options={tiers.map((t) => ({
+                    value: t.id,
+                    label: `${t.name} · $${t.purchaseAmount.toLocaleString("en-US")} · ${t.commissionPercent}%${
+                      t.status === "archived" ? " (archived)" : ""
+                    }`,
+                  }))}
                 />
               </Form.Item>
             </Card>

@@ -1,13 +1,19 @@
 import type { Metadata } from "next";
 import { StockistForm } from "@/components/admin/stockists/stockist-form";
-import { getStockistFieldSuggestions } from "@/lib/admin/stockist-queries";
+import {
+  getStockistFieldSuggestions,
+  listTierOptions,
+} from "@/lib/admin/stockist-queries";
 export const metadata: Metadata = {
   title: "Add Stockist — Finasto Admin",
   robots: { index: false, follow: false },
 };
 
 export default async function NewStockistPage() {
-  const suggestions = await getStockistFieldSuggestions();
+  const [suggestions, tiers] = await Promise.all([
+    getStockistFieldSuggestions(),
+    listTierOptions(),
+  ]);
   return (
     <div className="mx-auto flex max-w-[1100px] flex-col gap-6">
       <div>
@@ -19,7 +25,12 @@ export default async function NewStockistPage() {
           dashboard.
         </p>
       </div>
-      <StockistForm mode="create" stockist={null} suggestions={suggestions} />
+      <StockistForm
+        mode="create"
+        stockist={null}
+        suggestions={suggestions}
+        tiers={tiers}
+      />
     </div>
   );
 }

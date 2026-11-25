@@ -17,8 +17,25 @@ export type StockistProfile = {
   phone: string | null;
   country: string | null;
   region: string | null;
-  status: string;
-  discountPercent: number; // set by the admin, shown read-only
+   status: string;
+  tierName: string; // set by the admin, shown read-only
+  purchaseAmount: number;
+  commissionPercent: number;
+  avatarUrl: string | null; // short-lived signed link, null = no photo
+  bank: MyBankDetails | null; // null until the stockist saves them
+  countries: string[]; // suggestions for the bank country field
+};
+
+// Bank details exactly as saved. The stockist sees and can edit their own
+// full account number.
+export type MyBankDetails = {
+  accountHolderName: string;
+  bankName: string;
+  bankCountry: string;
+  accountNumber: string;
+  swiftBic: string | null;
+  routingCode: string | null;
+  payoutCurrency: string;
 };
 
 type RawProfile = {
@@ -29,7 +46,20 @@ type RawProfile = {
   country: string | null;
   region: string | null;
   status: string;
-  discount_percent: number | string | null;
+  tier_name: string;
+  purchase_amount: number | string | null;
+  commission_percent: number | string | null;
+  avatar_path: string | null;
+};
+
+type BankRow = {
+  account_holder_name: string;
+  bank_name: string;
+  bank_country: string;
+  account_number_or_iban: string;
+  swift_bic: string | null;
+  routing_code: string | null;
+  payout_currency: string;
 };
 
 const num = (v: unknown): number => {
@@ -52,6 +82,36 @@ export async function getMyStockistProfile(): Promise<StockistProfile | null> {
   const row = (data as RawProfile[] | null)?.[0];
   if (!row) return null;
 
+   // Bank details, country suggestions and the photo link are independent
+  // reads, so run them together.
+  const [bankResult, countriesResult, signedAvatar] = await Promise.all([
+    supabase
+      .from("stockist_bank_details")
+      .select(
+        "account_holder_name, bank_name, bank_country, account_number_or_iban, swift_bic, routing_code, payout_currency",
+      )
+      .eq("stockist_id", row.id)
+      .maybeSingle(),
+    supabase.from("countries").select("name").eq("active", true).order("name"),
+    // The bucket is private: make a 1-hour signed link.
+    row.avatar_path
+      ? supabase.storage
+          .from("stockist-avatars")
+          .createSignedUrl(row.avatar_path, 60 * 60)
+      : Promise.resolve(null),
+  ]);
+
+  if (bankResult.error) {
+    throw new Error(`Failed to load bank details: ${bankResult.error.message}`);
+  }
+  const bank = bankResult.data as BankRow | null;
+
+  // If the countries table can't be read, the form falls back to typing the
+  // country by hand, so this never fails the page. Same for the photo link.
+  const countries = (countriesResult.data ?? [])
+    .map((c) => c.name as string)
+    .filter(Boolean);
+
   return {
     id: row.id,
     name: row.name,
@@ -60,6 +120,21 @@ export async function getMyStockistProfile(): Promise<StockistProfile | null> {
     country: row.country,
     region: row.region,
     status: row.status,
-    discountPercent: num(row.discount_percent),
+    tierName: row.tier_name,
+    purchaseAmount: num(row.purchase_amount),
+    commissionPercent: num(row.commission_percent),
+    avatarUrl: signedAvatar?.data?.signedUrl ?? null,
+    bank: bank
+      ? {
+          accountHolderName: bank.account_holder_name,
+          bankName: bank.bank_name,
+          bankCountry: bank.bank_country,
+          accountNumber: bank.account_number_or_iban,
+          swiftBic: bank.swift_bic,
+          routingCode: bank.routing_code,
+          payoutCurrency: bank.payout_currency,
+        }
+      : null,
+    countries,
   };
 }

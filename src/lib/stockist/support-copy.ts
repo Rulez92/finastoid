@@ -6,7 +6,7 @@ export const SUPPORT_TEXT = {
     titleLead: "Your",
     titleAccent: "Support",
     subtitle:
-      "Questions about bulk orders, payments, stock or your affiliates? Message the Finasto team directly.",
+      "Questions about bulk orders, payments, stock or your affiliates? Message the Finasto™ team directly.",
     whatsapp: "Chat with us on WhatsApp",
     whatsappOff: "WhatsApp chat is unavailable right now",
   },

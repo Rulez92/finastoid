@@ -30,13 +30,41 @@ const stockistInputSchema = z.object({
   phone: z.string().trim().max(30).nullable(),
   country: z.string().trim().max(60).nullable(),
   region: z.string().trim().max(60).nullable(),
-  defaultProfitPercent: z.number().finite().min(0).max(100),
+  tierId: z.string().uuid("Choose a tier"),
   notes: z.string().trim().max(2000).nullable(),
   status: z.enum(["active", "inactive"]), // "deleted" stays a separate action
 });
 
 export type StockistInput = z.infer<typeof stockistInputSchema>;
+// A new stockist can only get an ACTIVE tier. On edit, the stockist may keep
+// their current tier even if it was archived since, so saving other fields
+// never fails because of a tier the admin did not touch.
+async function checkTierAssignable(
+  tierId: string,
+  stockistId?: string,
+): Promise<string | null> {
+  const supabase = await createClient();
 
+  const { data: tier, error } = await supabase
+    .from("associate_tiers")
+    .select("id, status")
+    .eq("id", tierId)
+    .maybeSingle();
+
+  if (error) return `Could not verify the tier: ${error.message}`;
+  if (!tier) return "That tier no longer exists.";
+  if (tier.status === "active") return null;
+
+  if (stockistId) {
+    const { data: current } = await supabase
+      .from("stockists")
+      .select("tier_id")
+      .eq("id", stockistId)
+      .maybeSingle();
+    if (current?.tier_id === tierId) return null;
+  }
+  return "That tier is archived. Choose an active tier.";
+}
 export type ActionResult =
   | { success: true; stockistId: string }
   | { success: false; error: string; fieldErrors?: Record<string, string[]> };
@@ -71,6 +99,15 @@ export async function createStockist(
     };
   }
 
+  const tierError = await checkTierAssignable(data.tierId);
+  if (tierError) {
+    return {
+      success: false,
+      error: tierError,
+      fieldErrors: { tierId: [tierError] },
+    };
+  }
+
   // 1) Create the stockist's row in our own table first (status 'active'
   //    by default — the invite affects login access, not this record).
   const supabase = await createClient();
@@ -82,7 +119,7 @@ export async function createStockist(
       phone: data.phone,
       country: data.country,
       region: data.region,
-      default_profit_percent: data.defaultProfitPercent,
+      tier_id: data.tierId,
       notes: data.notes,
       status: data.status,
     })
@@ -221,6 +258,15 @@ export async function updateStockist(
     };
   }
 
+  const tierError = await checkTierAssignable(data.tierId, id);
+  if (tierError) {
+    return {
+      success: false,
+      error: tierError,
+      fieldErrors: { tierId: [tierError] },
+    };
+  }
+
   const supabase = await createClient();
   const { error } = await supabase
     .from("stockists")
@@ -230,7 +276,7 @@ export async function updateStockist(
       phone: data.phone,
       country: data.country,
       region: data.region,
-      default_profit_percent: data.defaultProfitPercent,
+      tier_id: data.tierId,
       notes: data.notes,
       status: data.status,
       updated_at: new Date().toISOString(),

@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { message, Table, Tooltip, type TableColumnsType } from "antd";
+import { App, Table, Tooltip, type TableColumnsType } from "antd";
 import { Mail, Pencil, Store, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type {
@@ -113,13 +113,15 @@ export function StockistTable({
       ),
     },
     {
-      title: "Profit %",
-      dataIndex: "defaultProfitPercent",
-      align: "right",
+      title: "Tier",
+      dataIndex: "tierName",
       render: (_, item) => (
-        <span className="font-sans text-[13px] tabular-nums text-espresso">
-          {item.defaultProfitPercent}%
-        </span>
+        <div>
+          <p className="font-sans text-[13px] text-espresso">{item.tierName}</p>
+          <p className="font-sans text-[12px] tabular-nums text-warm-gray">
+            {item.commissionPercent}% commission
+          </p>
+        </div>
       ),
     },
     {
@@ -182,6 +184,7 @@ export function StockistTable({
 
 function InviteButton({ item }: { item: StockistListItem }) {
   const router = useRouter();
+  const { message } = App.useApp();
   const [isPending, startTransition] = useTransition();
 
   function resend() {
@@ -323,9 +326,12 @@ function StockistCard({
         <dd className="text-right tabular-nums text-espresso">
           {item.affiliateCount}
         </dd>
-        <dt className="text-warm-gray">Profit %</dt>
-        <dd className="text-right tabular-nums text-espresso">
-          {item.defaultProfitPercent}%
+        <dt className="text-warm-gray">Tier</dt>
+        <dd className="text-right text-espresso">
+          {item.tierName}{" "}
+          <span className="tabular-nums text-warm-gray">
+            ({item.commissionPercent}%)
+          </span>
         </dd>
         <dt className="text-warm-gray">Updated</dt>
         <dd className="text-right text-espresso/80">
@@ -334,7 +340,11 @@ function StockistCard({
       </dl>
 
       <div className="mt-2 text-right">
-        <StatusToggle item={item} />
+        {item.hasAccount ? (
+          <StatusToggle item={item} />
+        ) : (
+          <InviteButton item={item} />
+        )}
       </div>
     </li>
   );

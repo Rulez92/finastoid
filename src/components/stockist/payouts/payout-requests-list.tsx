@@ -1,0 +1,192 @@
+"use client";
+
+// Request history. Each row can be expanded to see the dates, the amounts
+// and (for rejected requests) the reason the admin gave. Rejected rows are
+// opened by default, so the stockist sees the reason without clicking.
+
+import { Alert, Card, Descriptions, Table, Typography } from "antd";
+import type { TableColumnsType } from "antd";
+import type { MyPayoutRequest } from "@/lib/stockist/stockist-payout-queries";
+import PayoutStatusBadge from "./payout-status-badge";
+
+const usd = (n: number) =>
+  new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(
+    n,
+  );
+
+// Amount in the stockist's own payout currency. A bad currency code must
+// never crash the page, so fall back to plain text.
+const money = (amount: number, currency: string) => {
+  try {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency,
+    }).format(amount);
+  } catch {
+    return `${amount.toFixed(2)} ${currency}`;
+  }
+};
+
+// Fixed time zone, so the server and the browser print the same text.
+const dateOnly = (iso: string | null) =>
+  iso
+    ? new Date(iso).toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        timeZone: "UTC",
+      })
+    : "-";
+
+const dateTime = (iso: string | null) =>
+  iso
+    ? new Date(iso).toLocaleString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+        timeZone: "UTC",
+      }) + " UTC"
+    : "-";
+
+export default function PayoutRequestsList({
+  requests,
+}: {
+  requests: MyPayoutRequest[];
+}) {
+  const columns: TableColumnsType<MyPayoutRequest> = [
+    {
+      title: "Request",
+      dataIndex: "requestNumber",
+      key: "requestNumber",
+      width: 170,
+      render: (value: string) => (
+        <span className="font-medium text-aff-green-900">{value}</span>
+      ),
+    },
+    {
+      title: "Date",
+      dataIndex: "requestedAt",
+      key: "requestedAt",
+      width: 120,
+      render: (v: string) => dateOnly(v),
+    },
+    {
+      title: "Orders",
+      dataIndex: "orderCount",
+      key: "orderCount",
+      width: 80,
+    },
+    {
+      title: "Total (USD)",
+      dataIndex: "totalUsd",
+      key: "totalUsd",
+      width: 130,
+      render: (v: number) => <strong>{usd(v)}</strong>,
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      width: 110,
+      render: (_: unknown, r) => <PayoutStatusBadge status={r.status} />,
+    },
+  ];
+
+  return (
+    <Card
+      className="aff-card aff-payout-card"
+      bordered={false}
+      title="Request history"
+    >
+      <Table<MyPayoutRequest>
+        size="middle"
+        className="aff-orders-table"
+        rowKey="id"
+        columns={columns}
+        dataSource={requests}
+        pagination={{
+          pageSize: 10,
+          hideOnSinglePage: true,
+          showSizeChanger: false,
+        }}
+        scroll={{ x: "max-content" }}
+        locale={{ emptyText: "You have not sent any payout requests yet." }}
+        expandable={{
+          defaultExpandedRowKeys: requests
+            .filter((r) => r.status === "rejected")
+            .map((r) => r.id),
+          expandedRowRender: (r) => (
+            <div className="flex flex-col gap-3 rounded-xl border border-aff-border border-l-[3px] border-l-aff-gold-500 bg-aff-ivory p-3 sm:p-4">
+              {r.status === "rejected" && (
+                <Alert
+                  type="error"
+                  showIcon
+                  message="Request rejected"
+                  description={
+                    <>
+                      {r.rejectionReason || "No reason was given."}
+                      <br />
+                      <Typography.Text type="secondary">
+                        The orders in this request are available again. You can
+                        request them again.
+                      </Typography.Text>
+                    </>
+                  }
+                />
+              )}
+
+              <Descriptions
+                size="small"
+                column={{ xs: 1, sm: 2, lg: 3 }}
+                colon={false}
+              >
+                <Descriptions.Item
+                  label={<span style={{ color: "#1F7A52" }}>Commission</span>}
+                >
+                  {usd(r.itemsTotalUsd)}
+                </Descriptions.Item>
+                {r.adjustmentsUsd < 0 && (
+                  <Descriptions.Item label="Refund adjustments">
+                    {usd(r.adjustmentsUsd)}
+                  </Descriptions.Item>
+                )}
+                {r.totalPayoutAmount != null && (
+                  <Descriptions.Item label={r.payoutCurrency}>
+                    {money(r.totalPayoutAmount, r.payoutCurrency)}
+                  </Descriptions.Item>
+                )}
+                <Descriptions.Item
+                  label={<span className="text-aff-muted">Requested</span>}
+                >
+                  {dateTime(r.requestedAt)}
+                </Descriptions.Item>
+                {r.approvedAt && (
+                  <Descriptions.Item
+                    label={<span style={{ color: "#1F7A52" }}>Approved</span>}
+                  >
+                    {dateTime(r.approvedAt)}
+                  </Descriptions.Item>
+                )}
+                {r.rejectedAt && (
+                  <Descriptions.Item
+                    label={<span style={{ color: "#A3342B" }}>Rejected</span>}
+                  >
+                    {dateTime(r.rejectedAt)}
+                  </Descriptions.Item>
+                )}
+                {r.paidAt && (
+                  <Descriptions.Item label="Paid">
+                    {dateTime(r.paidAt)}
+                  </Descriptions.Item>
+                )}
+              </Descriptions>
+            </div>
+          ),
+        }}
+      />
+    </Card>
+  );
+}

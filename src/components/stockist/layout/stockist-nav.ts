@@ -1,13 +1,24 @@
+// import {
+//   Boxes,
+//   LayoutDashboard,
+//   type LucideIcon,
+//   MessageCircle,
+//   Package,
+//   Settings,
+//   ShoppingBag,
+//   UserPlus,
+//   Warehouse,
+// } from "lucide-react";
+
 import {
-  Boxes,
+  BadgePercent,
   LayoutDashboard,
   type LucideIcon,
+  Megaphone,
   MessageCircle,
-  Package,
   Settings,
-  ShoppingBag,
   UserPlus,
-  Warehouse,
+  Wallet,
 } from "lucide-react";
 
 // Single source of truth for the stockist sidebar AND the top-bar title
@@ -22,15 +33,18 @@ export type StockistNavItem = {
 
 export const stockistNav: StockistNavItem[] = [
   { label: "Dashboard", href: "/stockist", icon: LayoutDashboard },
-  { label: "Products", href: "/stockist/products", icon: Package },
-  { label: "Bulk Orders", href: "/stockist/bulk-orders", icon: Boxes },
-  { label: "Inventory", href: "/stockist/inventory", icon: Warehouse },
-  { label: "Orders", href: "/stockist/orders", icon: ShoppingBag },
+  // { label: "Products", href: "/stockist/products", icon: Package },
+  // { label: "Bulk Orders", href: "/stockist/bulk-orders", icon: Boxes },
+  // { label: "Inventory", href: "/stockist/inventory", icon: Warehouse },
+  // { label: "Orders", href: "/stockist/orders", icon: ShoppingBag },
   {
     label: "Affiliate Requests",
     href: "/stockist/affiliate-requests",
-    icon: UserPlus,
+       icon: UserPlus,
   },
+  { label: "Announcements", href: "/stockist/announcements", icon: Megaphone },
+ { label: "Personal Orders", href: "/shop", icon: BadgePercent },
+  { label: "Payouts Requests", href: "/stockist/payouts", icon: Wallet },
   { label: "Settings", href: "/stockist/settings", icon: Settings },
   { label: "Support", href: "/stockist/support", icon: MessageCircle },
 ];

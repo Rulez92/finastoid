@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import {
   getStockistById,
   getStockistFieldSuggestions,
+  listTierOptions,
 } from "@/lib/admin/stockist-queries";
 import { StockistForm } from "@/components/admin/stockists/stockist-form";
 import { AssignedAffiliatesPanel } from "@/components/admin/stockists/assigned-affiliates-panel";
@@ -28,10 +29,11 @@ export default async function EditStockistPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const [stockist, { rates, currency }, suggestions] = await Promise.all([
+  const [stockist, { rates, currency }, suggestions, tiers] = await Promise.all([
     getStockistById(id),
     getCurrencyContext(),
     getStockistFieldSuggestions(),
+    listTierOptions(), // see note below
   ]);
 
   if (!stockist) notFound();
@@ -57,7 +59,12 @@ export default async function EditStockistPage({
         rates={rates}
         currency={currency}
       />
-      <StockistForm mode="edit" stockist={stockist} suggestions={suggestions} />
+      <StockistForm
+        mode="edit"
+        stockist={stockist}
+        suggestions={suggestions}
+        tiers={tiers}
+      />
     </div>
   );
 }

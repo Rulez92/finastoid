@@ -172,11 +172,12 @@
 // }
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { ArrowRight, Menu, UserRound } from "lucide-react";
+import { ArrowRight, Landmark, LogOut, Menu, UserRound } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { signOutAction } from "@/lib/auth/actions";
 import { StockistSidebar } from "./stockist-sidebar";
 import { stockistNav, isNavActive } from "./stockist-nav";
 
@@ -190,16 +191,28 @@ export function StockistShell({
   name,
   email,
   profileLocked,
+  avatarUrl,
+  tierName,
+  commissionPercent,
+  bankComplete,
+  unreadAnnouncements = 0,
   children,
 }: {
   name: string | null;
   email: string;
   profileLocked: boolean;
+  avatarUrl: string | null;
+  tierName: string;
+  commissionPercent: number;
+  bankComplete: boolean;
+  unreadAnnouncements?: number;
   children: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
 
   const [collapsed, setCollapsed] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   // Until username, phone and country are saved, only Settings is usable.
   const needsProfile =
@@ -221,6 +234,25 @@ export function StockistShell({
       document.body.style.overflow = "";
     };
   }, [open]);
+
+  // Profile menu: close on outside tap or Escape.
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onPointerDown = (e: PointerEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMenuOpen(false);
+    };
+    document.addEventListener("pointerdown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [menuOpen]);
 
   return (
     <div className="relative min-h-screen bg-cream dark:bg-cream-soft">
@@ -246,6 +278,9 @@ export function StockistShell({
           onNavigate={() => setOpen(false)}
           collapsed={collapsed}
           onToggleCollapse={() => setCollapsed((c) => !c)}
+          tierName={tierName}
+          commissionPercent={commissionPercent}
+          unreadAnnouncements={unreadAnnouncements}
         />
       </aside>
       <div
@@ -286,17 +321,61 @@ export function StockistShell({
             />
 
             <div className="flex items-center gap-2.5">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-green-deep to-green font-sans text-[12px] font-semibold text-aff-cream-50 ring-2 ring-aff-gold-500/60 ring-offset-2 ring-offset-aff-ivory">
-                {initials}
+              <div ref={menuRef} className="relative">
+                <button
+                  type="button"
+                  onClick={() => setMenuOpen((o) => !o)}
+                  aria-label="Open profile menu"
+                  aria-haspopup="menu"
+                  aria-expanded={menuOpen}
+                  className="flex h-10 w-10 shrink-0 cursor-pointer touch-manipulation items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-green-deep to-green font-sans text-[12px] font-semibold text-aff-cream-50 ring-2 ring-aff-gold-500/60 ring-offset-2 ring-offset-aff-ivory md:cursor-default"
+                >
+                  {avatarUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={avatarUrl}
+                      alt=""
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    initials
+                  )}
+                </button>
+
+                {/* Small-screen menu: name + sign out (hidden from md up) */}
+                {menuOpen && (
+                  <div
+                    role="menu"
+                    className="absolute right-0 top-full z-50 mt-3 w-52 overflow-hidden rounded-xl border border-aff-gold-400/40 bg-aff-green-950 p-1.5 shadow-[0_16px_40px_-12px_rgba(3,24,7,0.7)] md:hidden"
+                  >
+                    <p className="truncate px-3 py-2 font-sans text-[13px] font-medium text-aff-cream-50">
+                      {name || "Stockist"}
+                    </p>
+                    <span
+                      aria-hidden="true"
+                      className="mx-2 block h-px bg-aff-gold-400/25"
+                    />
+                    <form action={signOutAction}>
+                      <button
+                        type="submit"
+                        role="menuitem"
+                        className="mt-1 flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2.5 font-sans text-[14px] text-aff-cream-50/85 transition-colors active:bg-aff-cream-50/10 hover:bg-aff-cream-50/5 hover:text-aff-gold-300"
+                      >
+                        <LogOut className="h-[18px] w-[18px]" strokeWidth={1.6} />
+                        Sign out
+                      </button>
+                    </form>
+                  </div>
+                )}
               </div>
-              <div className="hidden min-w-0 md:block">
-                <p className="max-w-[160px] truncate font-sans text-[13px] leading-tight text-aff-green-900">
-                  {name || "Stockist"}
-                </p>
-                <p className="max-w-[160px] truncate font-sans text-[11px] leading-tight text-aff-muted">
-                  {email}
-                </p>
-              </div>
+            <div className="min-w-0">
+  <p className="max-w-[90px] truncate font-sans text-[13px] leading-tight text-aff-green-900 sm:max-w-[160px]">
+    {name || "Stockist"}
+  </p>
+  <p className="hidden max-w-[160px] truncate font-sans text-[11px] leading-tight text-aff-muted sm:block">
+    {email}
+  </p>
+</div>
             </div>
           </div>
         </header>
@@ -319,8 +398,9 @@ export function StockistShell({
                 Complete your profile
               </h1>
               <p className="mt-3 font-sans text-[14px] leading-relaxed text-aff-muted">
-                Add your username, phone number and country first. Your country
-                decides the currency your prices are shown in.
+                Add your phone number and country first so the Finasto team can
+                reach you. You can then add your bank details to receive
+                commissions.
               </p>
               <Link
                 href="/stockist/settings"
@@ -335,7 +415,45 @@ export function StockistShell({
               </Link>
             </div>
           ) : (
-            children
+            <>
+              {!bankComplete && !pathname.startsWith("/stockist/settings") && (
+                <div
+                  role="status"
+                  className="mb-4 flex flex-col gap-3 rounded-xl border border-aff-gold-500/50 bg-aff-ivory p-4 sm:mb-6 sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <div className="flex items-start gap-3">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-aff-gold-300 via-aff-gold-400 to-aff-gold-600 text-aff-green-950">
+                      <Landmark
+                        className="h-[18px] w-[18px]"
+                        strokeWidth={1.8}
+                        aria-hidden="true"
+                      />
+                    </span>
+                    <div className="min-w-0">
+                      <p className="font-sans text-[14px] font-semibold text-aff-green-900">
+                        Add your bank details
+                      </p>
+                      <p className="mt-0.5 font-sans text-[13px] leading-relaxed text-aff-muted">
+                       Finasto™ needs them to pay your commissions. You
+                        can&apos;t request a payout until they are saved.
+                      </p>
+                    </div>
+                  </div>
+                  <Link
+                    href="/stockist/settings"
+                    className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-full border border-aff-gold-500/60 bg-gradient-to-br from-green-deep to-green px-5 font-sans text-[13px] font-medium text-aff-cream-50 transition-all active:scale-[0.97]"
+                  >
+                    Add bank details
+                    <ArrowRight
+                      className="h-4 w-4 text-aff-gold-300"
+                      strokeWidth={1.8}
+                      aria-hidden="true"
+                    />
+                  </Link>
+                </div>
+              )}
+              {children}
+            </>
           )}
         </main>
       </div>
