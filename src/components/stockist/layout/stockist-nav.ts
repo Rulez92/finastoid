@@ -12,6 +12,7 @@
 
 import {
   BadgePercent,
+  Gift,
   LayoutDashboard,
   type LucideIcon,
   Megaphone,
@@ -42,9 +43,11 @@ export const stockistNav: StockistNavItem[] = [
     href: "/stockist/affiliate-requests",
        icon: UserPlus,
   },
-  { label: "Announcements", href: "/stockist/announcements", icon: Megaphone },
+
  { label: "Personal Orders", href: "/shop", icon: BadgePercent },
   { label: "Payouts Requests", href: "/stockist/payouts", icon: Wallet },
+    { label: "Announcements", href: "/stockist/announcements", icon: Megaphone },
+     { label: "Promotions", href: "/stockist/promotions", icon: Gift },
   { label: "Settings", href: "/stockist/settings", icon: Settings },
   { label: "Support", href: "/stockist/support", icon: MessageCircle },
 ];

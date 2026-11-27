@@ -89,7 +89,7 @@ export default async function StockistRequestsPage() {
                   </span>
                 </h1>
                 <p className="mt-1.5 max-w-xl font-sans text-[13px] leading-relaxed text-aff-cream-50/75 sm:text-[14px]">
-                  Ask Finasto to assign an affiliate to you, and follow the
+                  Ask Finasto™ to assign an affiliate to you, and follow the
                   status of every request you send.
                 </p>
               </div>

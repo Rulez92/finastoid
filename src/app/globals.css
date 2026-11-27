@@ -3,6 +3,61 @@
 @import "./background-pattern.css";
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* ---------- Gold + copper + green scrollbar theme ---------- */
+:root {
+  --sb-gold: #d4af37;
+  --sb-gold-light: #e6cd78;
+  --sb-copper: #b87333;
+  --sb-green: #2f7a58;         /* green */
+  --sb-green-light: #4fa37c;   /* lighter green for hover */
+  --sb-blend: #c58a35;         /* solid fallback (Firefox, new Chrome) */
+}
+
+/* Firefox and Chrome 121+ (solid color only, transparent track) */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--sb-blend) transparent;
+}
+
+/* Sidebar (dark green background): lighter tone so it stays visible */
+.sidebar-scroll {
+  scrollbar-color: #e0b560 transparent;
+}
+
+/* Older Chrome, Safari, Edge only */
+@supports not (scrollbar-color: auto) {
+  *::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  *::-webkit-scrollbar-track,
+  *::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+  *::-webkit-scrollbar-thumb {
+    background: linear-gradient(
+      180deg,
+      var(--sb-gold-light) 0%,
+      var(--sb-gold) 30%,
+      var(--sb-copper) 65%,
+      var(--sb-green) 100%
+    );
+    border-radius: 9999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  *::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(
+      180deg,
+      #f1dc92 0%,
+      var(--sb-gold-light) 30%,
+      #dd9a62 65%,
+      var(--sb-green-light) 100%
+    );
+    background-clip: padding-box;
+  }
+}
+
 :root {
   /* Finasto brand palette */
   --color-cream: #f7f1e7;

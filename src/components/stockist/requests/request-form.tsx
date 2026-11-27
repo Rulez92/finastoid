@@ -233,7 +233,7 @@ export function RequestForm() {
       </h2>
       <p className="mb-5 mt-1 max-w-2xl font-sans text-[13px] leading-relaxed text-aff-muted">
         Enter the affiliate&apos;s details and tell us why they should be
-        assigned to you. Finasto reviews every request, and nothing changes
+        assigned to you. Finasto™ reviews every request, and nothing changes
         until an admin approves it.
       </p>
 
